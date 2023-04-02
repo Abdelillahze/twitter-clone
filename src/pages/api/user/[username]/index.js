@@ -99,6 +99,13 @@ export default async function handler(req, res) {
             model: "Like",
           },
         },
+        {
+          path: "tweet",
+          populate: {
+            path: "retweets",
+            model: "Retweet",
+          },
+        },
       ])
       .limit(limit)
       .skip(limit * search)
