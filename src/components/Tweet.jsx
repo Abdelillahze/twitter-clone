@@ -103,7 +103,7 @@ export default function Tweet({ user, tweet, refresh }) {
                 href={`/${tweetData.author.username}`}
                 className="text-blue-100 hover:underline"
               >
-                @{tweet.author.username}
+                @{tweetData.author.username}
               </Link>
             </div>
           )}
