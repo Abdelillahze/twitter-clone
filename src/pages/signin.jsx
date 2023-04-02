@@ -16,9 +16,11 @@ export default function SignIn() {
   }, [status]);
 
   if (status === "loading") {
-    return <div className="w-full min-h-[100vh] bg-black-100">
-    <Loading className="mx-auto mt-4">
-    </div>;
+    return (
+      <div className="w-full min-h-[100vh] bg-black-100">
+        <Loading className="mx-auto mt-4" />
+      </div>
+    );
   }
 
   return (
