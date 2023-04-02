@@ -10,20 +10,20 @@ export default async function handler(req, res) {
     const tweetId = req.query.tweetId;
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
-      res.json(403).json({ error: "la" });
+      res.status(403).json({ error: "la" });
     }
     let tweet = await Tweet.findById(tweetId).populate("author");
     if (!tweet) {
       tweet = await Comment.findById(tweetId).populate("author");
 
       if (!tweet) {
-        return res.json(404).json({ error: "la" });
+        return res.status(404).json({ error: "la" });
       }
     }
     const me = await User.findOne({ email: session.user.email });
     if (!me) {
       signOut();
-      res.json(403).json({ error: "la" });
+      res.status(403).json({ error: "la" });
     }
     const isLiked = await Like.findOne({ author: me, tweet: tweet._id });
     switch (req.method) {

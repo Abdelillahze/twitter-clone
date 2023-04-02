@@ -9,12 +9,12 @@ export default async function handler(req, res) {
   try {
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
-      res.json(403).json({ error: "la" });
+      res.status(403).json({ error: "la" });
     }
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
       signOut();
-      res.json(403).json({ error: "la" });
+      res.status(403).json({ error: "la" });
     }
     switch (req.method) {
       case "GET": {
@@ -90,5 +90,6 @@ export default async function handler(req, res) {
     }
   } catch (err) {
     console.log(err);
+    return res.status(400).json({ error: "Bad Request" });
   }
 }
