@@ -26,7 +26,7 @@ module.exports = {
       blue: {
         100: "#1d9bf0",
         10: "#1e9cf11a",
-        5: "#1e9cf11a",
+        5: "#1e9cf10d",
       },
       pink: {
         100: "rgb(249 24 128)",

@@ -18,9 +18,9 @@ export default async function handler(req, res) {
     }
     switch (req.method) {
       case "GET": {
-        const limit = 10;
-        const search = req.query.data[0];
-        const type = req.query.data[1];
+        const limit = req.query.limit;
+        const type = req.query.data[0];
+        const search = Math.max(0, req.query.page - 1);
         let options = {};
         if (type === "following") {
           options = {
@@ -44,7 +44,8 @@ export default async function handler(req, res) {
             },
           ])
           .limit(limit)
-          .skip(limit * search);
+          .skip(limit * search)
+          .sort({ createdAt: -1 });
         const retweets = await Retweet.find(options)
           .populate([
             {
@@ -71,15 +72,16 @@ export default async function handler(req, res) {
             },
           ])
           .limit(limit)
-          .skip(limit * search);
+          .skip(limit * search)
+          .sort({ createdAt: -1 });
         const data = [...tweets, ...retweets].sort((a, b) => {
           const dateA = new Date(a.createdAt).getTime();
           const dateB = new Date(b.createdAt).getTime();
           if (dateA < dateB) {
-            return -1;
+            return 1;
           }
           if (dateA > dateB) {
-            return 1;
+            return -1;
           }
           return 0;
         });

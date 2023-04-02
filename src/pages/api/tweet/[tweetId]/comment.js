@@ -1,7 +1,6 @@
 import Tweet from "@/models/tweetModel";
-import Retweet from "@/models/retweetModel";
-import User from "@/models/userModel";
 import Comment from "@/models/commentModel";
+import User from "@/models/userModel";
 import { getServerSession, signOut } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
 
@@ -15,7 +14,6 @@ export default async function handler(req, res) {
     let tweet = await Tweet.findById(tweetId).populate("author");
     if (!tweet) {
       tweet = await Comment.findById(tweetId).populate("author");
-
       if (!tweet) {
         return res.json(404).json({ error: "la" });
       }
@@ -25,30 +23,18 @@ export default async function handler(req, res) {
       signOut();
       res.json(403).json({ error: "la" });
     }
-    const isRetweeted = await Retweet.findOne({ author: me, tweet: tweet._id });
     switch (req.method) {
       case "GET": {
-        const retweets = await Retweet.find({ tweet: tweet._id });
+        const comments = await Comment.find({ tweet: tweet._id });
 
-        return res.status(200).json({ retweets });
+        return res.status(200).json({ comments });
       }
       case "PATCH": {
-        if (tweet.author._id === me._id) return res.json(200).end();
-
-        if (isRetweeted) {
-          tweet.retweets = tweet.retweets.filter(
-            (retweet) => retweet.toString() !== isRetweeted._id.toString()
-          );
-          isRetweeted.deleteOne();
-          tweet.save();
-          return res.status(204).end();
-        } else {
-          const retweet = await Retweet.create({ author: me, tweet });
-          tweet.retweets.push(retweet);
-          me.retweets.push(retweet);
-          tweet.save();
-          return res.status(204).end();
-        }
+        const text = req.body.text;
+        const comment = await Comment.create({ author: me, tweet, text });
+        tweet.comments.push(comment);
+        tweet.save();
+        return res.status(204).end();
       }
     }
   } catch (err) {

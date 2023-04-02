@@ -1,3 +1,6 @@
+import Like from "./likeModel";
+import Comment from "./commentModel";
+import Retweet from "./retweetModel";
 import { Schema, models, model } from "mongoose";
 
 const tweetSchema = new Schema({
@@ -37,6 +40,7 @@ const tweetSchema = new Schema({
     },
   ],
 });
+
 
 const tweetModel = models.Tweet || model("Tweet", tweetSchema);
 

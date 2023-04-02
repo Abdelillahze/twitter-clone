@@ -7,19 +7,50 @@ import { BsCalendar3 } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import axios from "axios";
 import Tweet from "./Tweet";
+import EditProfile from "./EditProfile";
+import Loading from "./Loading";
 
 export default function ProfileSection({
   fetchedUser,
   user,
   me,
+  loading,
   refresh,
-  tweets,
+  data,
+  addSearch,
 }) {
-  const [showPortal, setShowPortal] = useState(false);
   const [parent, setParent] = useState(null);
   const [following, setFollowing] = useState(null);
+  const [showImage, setShowImage] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const date = new Date(fetchedUser.createdAt);
   const buttonRef = useRef(null);
+
+  useEffect(() => {
+    fetch();
+
+    setParent(document.getElementById("portal"));
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("scroll", (event) => {
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      if (window.scrollY === end) {
+        addSearch();
+      }
+    });
+  }, []);
+
+  const tweets = [];
+  for (let i = 0; i < data?.length; i++) {
+    tweets.push(
+      data[i].data.map((tweet) => {
+        return (
+          <Tweet user={user} refresh={refresh} key={tweet._id} tweet={tweet} />
+        );
+      })
+    );
+  }
 
   if (following && buttonRef.current) {
     buttonRef.current.classList.add("followed");
@@ -27,9 +58,19 @@ export default function ProfileSection({
     buttonRef.current.classList.remove("followed");
   }
 
-  if (showPortal) {
+  if (parent && (showImage || showEditProfile)) {
     parent.style.display = "block";
+  } else if (parent) {
+    parent.style.display = "none";
   }
+
+  const changeShowImage = () => {
+    setShowImage(false);
+  };
+
+  const changeShowEditProfile = () => {
+    setShowEditProfile(false);
+  };
 
   const fetch = async () => {
     const res = await axios.get(`/api/follow/${fetchedUser._id}`);
@@ -48,15 +89,24 @@ export default function ProfileSection({
     await fetch();
   };
 
-  useEffect(() => {
-    fetch();
-
-    setParent(document.getElementById("portal"));
-  }, []);
-
   return (
     <div className="section w-full mt-14">
-      {parent && createPortal(<ImageView image={fetchedUser.image} />, parent)}
+      {showImage &&
+        createPortal(
+          <ImageView
+            image={fetchedUser.image.replace(/=.+/g, "=s500-c")}
+            changeShowImage={changeShowImage}
+          />,
+          parent
+        )}
+      {showEditProfile &&
+        createPortal(
+          <EditProfile
+            changeShowEditProfile={changeShowEditProfile}
+            refresh={refresh}
+          />,
+          parent
+        )}
       <div className="w-full h-44 bg-banner">
         {fetchedUser.banner && (
           <Image
@@ -70,10 +120,8 @@ export default function ProfileSection({
       <div className="flex h-24 justify-between px-4 py-4 items-start mb-2">
         <div className="w-36 h-36 bg-banner rounded-full -translate-y-1/2 border-4 border-black-100 cursor-pointer">
           <Image
+            onClick={() => setShowImage(true)}
             quality="100"
-            onClick={() => {
-              setShowPortal(!showPortal);
-            }}
             className="w-full h-full rounded-full hover:opacity-90"
             src={fetchedUser.image.replace(/=.+/g, "=s500-c")}
             alt={"pfp"}
@@ -82,7 +130,10 @@ export default function ProfileSection({
           />
         </div>
         {me ? (
-          <button className="border border-borderColor px-4 py-2 rounded-full font-bold transition-colors hover:bg-white-10">
+          <button
+            onClick={() => setShowEditProfile(true)}
+            className="border border-borderColor px-4 py-2 rounded-full font-bold transition-colors hover:bg-white-10"
+          >
             Edit Profile
           </button>
         ) : (
@@ -115,7 +166,8 @@ export default function ProfileSection({
             <MdVerified className="ml-2 w-6 h-6 text-blue-100" />
           )}
         </h1>
-        <p className="text-p mb-4">@{fetchedUser.username}</p>
+        <p className="text-p mb-2">@{fetchedUser.username}</p>
+        <p className="text-white mb-2">{fetchedUser.bio}</p>
         <div className="text-p flex items-center">
           <BsCalendar3 className="mr-2" /> Joined{" "}
           {date.toLocaleString("en", { year: "numeric", month: "long" })}
@@ -132,11 +184,8 @@ export default function ProfileSection({
         </div>
       </div>
       {/* // tweets */}
-      <div>
-        {tweets.map((tweet) => (
-          <Tweet user={user} key={tweet._id} tweet={tweet} refresh={refresh} />
-        ))}
-      </div>
+      <div>{tweets}</div>
+      {loading && <Loading className={"mx-auto my-4"} />}
     </div>
   );
 }

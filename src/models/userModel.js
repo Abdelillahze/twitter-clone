@@ -12,6 +12,10 @@ const userSchema = new Schema({
     unique: true,
     lowercase: true,
   },
+  bio: {
+    type: String,
+    default: () => "no Bio",
+  },
   image: String,
   createdAt: {
     type: Date,

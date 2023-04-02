@@ -55,8 +55,8 @@ export default async function handler(req, res) {
       return signOut();
     }
 
-    const limit = 10;
-    const search = req.query.search;
+    const limit = req.query.limit;
+    const search = Math.max(0, req.query.page - 1);
     const tweets = await Tweet.find({ author: user._id })
       .populate([
         {
@@ -73,7 +73,8 @@ export default async function handler(req, res) {
         },
       ])
       .limit(limit)
-      .skip(limit * search);
+      .skip(limit * search)
+      .sort({ createdAt: -1 });
     const retweets = await Retweet.find({ author: user._id })
       .populate([
         {
@@ -100,15 +101,16 @@ export default async function handler(req, res) {
         },
       ])
       .limit(limit)
-      .skip(limit * search);
+      .skip(limit * search)
+      .sort({ createdAt: -1 });
     const data = [...tweets, ...retweets].sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
       if (dateA < dateB) {
-        return -1;
+        return 1;
       }
       if (dateA > dateB) {
-        return 1;
+        return -1;
       }
       return 0;
     });

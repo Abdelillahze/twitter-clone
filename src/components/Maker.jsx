@@ -5,7 +5,13 @@ import Image from "next/image";
 import Picker from "@emoji-mart/react";
 import Loading from "./Loading";
 
-export default function Maker({ handler, user, buttonName, upload }) {
+export default function Maker({
+  handler,
+  user,
+  buttonName,
+  upload,
+  className,
+}) {
   const inputFileRef = useRef(null);
   const [data, setData] = useState({
     input: "",
@@ -51,7 +57,9 @@ export default function Maker({ handler, user, buttonName, upload }) {
   };
 
   return (
-    <div className="flex px-4 py-4 border border-transparent border-b-borderColor">
+    <div
+      className={`flex px-4 py-4 border border-transparent border-b-borderColor ${className}`}
+    >
       <Image
         className="w-12 h-12 rounded-full mr-4"
         src={user.image}

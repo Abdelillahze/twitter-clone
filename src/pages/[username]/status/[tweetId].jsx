@@ -15,7 +15,6 @@ export default function TweetList({ user, tweet }) {
   const { data, error, mutate } = useSWR(`/api/tweet/${tweetId}`, fetcher, {
     refreshInterval: 1000,
   });
-  console.log(data);
   return (
     <div className="relative w-full sm:w-10/12 lg:w-7/12 xl:w-6/12 min-h-[100vh] h-full border border-transparent border-r-borderColor">
       {data ? (

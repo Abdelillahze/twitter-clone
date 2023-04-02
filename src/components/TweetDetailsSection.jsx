@@ -7,9 +7,31 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { AiOutlineHeart, AiOutlineRetweet, AiFillHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import CommentMaker from "./CommentMaker";
+import { useRouter } from "next/router";
+import Selector from "./Selector";
+import Tweet from "./Tweet";
+import { useState, useRef } from "react";
 
 export default function TweetDetailsSection({ user, tweet, refresh }) {
+  const router = useRouter();
   const date = moment(tweet.createdAt);
+  const [selector, setSelector] = useState(false);
+  const selectorRef = useRef(null);
+
+  if (selector && selectorRef.current) {
+    selectorRef.current.style.display = "block";
+  } else if (selectorRef.current) {
+    selectorRef.current.style.display = "none";
+  }
+
+  const deleteHandler = async () => {
+    setSelector(false);
+    const res = await axios.delete(`/api/tweet/${tweet._id}/`);
+    router.push("/home");
+    refresh();
+
+    return res;
+  };
 
   const LikeHandler = async () => {
     const res = await axios.patch(`/api/tweet/${tweet._id}/like`);
@@ -44,7 +66,35 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
               </Link>
             </div>
           </div>
-          <FiMoreHorizontal />
+          <div className="group">
+            <button className="relative flex transition-colors group-hover:text-blue-100">
+              <FiMoreHorizontal
+                onClick={() => setSelector(!selector)}
+                className="w-8 h-8 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full"
+              />
+              <Selector
+                ref={selectorRef}
+                className={
+                  "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
+                }
+                options={[
+                  {
+                    label: `slm`,
+                    onClick: () => {
+                      setSelector(false);
+                      alert("wt wt wt wt js");
+                    },
+                  },
+                  {
+                    label: "Delete",
+                    onClick: () => {
+                      deleteHandler();
+                    },
+                  },
+                ]}
+              />
+            </button>
+          </div>
         </div>
         <p className="mb-4">{tweet.text}</p>
         <p className="text-p">
@@ -52,7 +102,12 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
         </p>
       </div>
       {/* stats */}
-      {!(tweet.likes.length === 0 || tweet.retweets.length === 0) && (
+
+      {!(
+        tweet.likes.length === 0 &&
+        tweet.retweets.length === 0 &&
+        tweet.comments.length === 0
+      ) && (
         <div className="w-full flex py-4 border border-transparent border-b-borderColor px-4">
           {tweet.likes.length === 0 || (
             <span className="mr-4 font-bold">
@@ -64,6 +119,12 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
             <span className="mr-4 font-bold">
               {tweet.retweets.length}
               <span className="text-p font-normal ml-1">Retweets</span>
+            </span>
+          )}
+          {tweet.comments.length === 0 || (
+            <span className="mr-4 font-bold">
+              {tweet.comments.length}
+              <span className="text-p font-normal ml-1">Comments</span>
             </span>
           )}
         </div>
@@ -92,7 +153,15 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
           </button>
         </div>
       </div>
-      <CommentMaker user={user} />
+      <CommentMaker user={user} tweetId={tweet._id} />
+      {tweet.comments.map((comment) => (
+        <Tweet
+          key={comment._id}
+          user={user}
+          tweet={comment}
+          refresh={refresh}
+        />
+      ))}
     </div>
   );
 }

@@ -11,8 +11,6 @@ export default function TweetMaker({ user }) {
     });
     const data = await res.data;
 
-    console.log(data);
-
     setUpload(false);
     return data;
   };

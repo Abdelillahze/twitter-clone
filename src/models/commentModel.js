@@ -1,4 +1,6 @@
 import { Schema, models, model } from "mongoose";
+import Like from "./likeModel";
+import Retweet from "./retweetModel";
 
 const commentSchema = new Schema({
   author: {
@@ -10,7 +12,7 @@ const commentSchema = new Schema({
     default: () => Date.now(),
     immutable: true,
   },
-  body: {
+  text: {
     type: String,
     required: true,
   },
@@ -29,11 +31,21 @@ const commentSchema = new Schema({
   retweets: [
     {
       type: Schema.Types.ObjectId,
-      refe: "Retweet",
+      ref: "Retweet",
     },
   ],
+  tweet: {
+    type: Schema.Types.ObjectId,
+    ref: "Tweet",
+  },
 });
 
+commentSchema.pre("remove", async function (next) {
+  await Like.findOneAndDelete({ tweet: this._id });
+  await Retweet.findOneAndDelete({ tweet: this._id });
+  await this.model().findOneAndDelete({ tweet: this._id });
+  next();
+});
 const commentModel = models.Comment || model("Comment", commentSchema);
 
 export default commentModel;

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Image from "next/image";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -7,13 +8,15 @@ export default function SignIn() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/home");
+      return;
+    }
+  }, [status]);
+
   if (status === "loading") {
     return <Loading />;
-  }
-
-  if (status === "authenticated") {
-    router.push("/home");
-    return;
   }
 
   return (

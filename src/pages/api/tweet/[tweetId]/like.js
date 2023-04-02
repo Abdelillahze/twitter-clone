@@ -1,5 +1,6 @@
 import Tweet from "@/models/tweetModel";
 import Like from "@/models/likeModel";
+import Comment from "@/models/commentModel";
 import User from "@/models/userModel";
 import { getServerSession, signOut } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
@@ -11,9 +12,13 @@ export default async function handler(req, res) {
     if (!session) {
       res.json(403).json({ error: "la" });
     }
-    const tweet = await Tweet.findById(tweetId).populate("author");
+    let tweet = await Tweet.findById(tweetId).populate("author");
     if (!tweet) {
-      res.json(404).json({ error: "la" });
+      tweet = await Comment.findById(tweetId).populate("author");
+
+      if (!tweet) {
+        return res.json(404).json({ error: "la" });
+      }
     }
     const me = await User.findOne({ email: session.user.email });
     if (!me) {
