@@ -17,8 +17,8 @@ export default function SignIn() {
 
   if (status === "loading") {
     return (
-      <div className="w-full min-h-[100vh] bg-black-100">
-        <Loading className="mx-auto mt-4" />
+      <div className="w-full py-4 min-h-[100vh] bg-black-100">
+        <Loading className="mx-auto" />
       </div>
     );
   }
