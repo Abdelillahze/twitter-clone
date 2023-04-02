@@ -79,13 +79,6 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
                 }
                 options={[
                   {
-                    label: `slm`,
-                    onClick: () => {
-                      setSelector(false);
-                      alert("wt wt wt wt js");
-                    },
-                  },
-                  {
                     label: "Delete",
                     onClick: () => {
                       deleteHandler();

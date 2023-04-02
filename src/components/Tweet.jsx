@@ -96,6 +96,17 @@ export default function Tweet({ user, tweet, refresh }) {
             <span className="mr-2 text-p">·</span>
             <span className="mr-2 text-p">{date}</span>
           </div>
+          {comment && (
+            <div className="text-p">
+              Replying to{" "}
+              <Link
+                href={`/${tweet.author.username}`}
+                className="text-blue-100 hover:underline"
+              >
+                @{tweet.author.username}
+              </Link>
+            </div>
+          )}
           <Link href={`/${tweet.author.username}/status/${tweet._id}`}>
             <p className="mb-2">{tweetData.text}</p>
             {tweetData.image && (
@@ -177,13 +188,6 @@ export default function Tweet({ user, tweet, refresh }) {
                 "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
               }
               options={[
-                {
-                  label: `slm`,
-                  onClick: () => {
-                    setSelector(false);
-                    alert("wt wt wt wt js");
-                  },
-                },
                 {
                   label: "Delete",
                   onClick: () => {
