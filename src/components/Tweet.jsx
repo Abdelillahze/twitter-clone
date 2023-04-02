@@ -100,7 +100,7 @@ export default function Tweet({ user, tweet, refresh }) {
             <div className="text-p">
               Replying to{" "}
               <Link
-                href={`/${tweet.author.username}`}
+                href={`/${tweetData.author.username}`}
                 className="text-blue-100 hover:underline"
               >
                 @{tweet.author.username}
