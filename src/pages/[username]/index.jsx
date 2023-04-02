@@ -33,7 +33,7 @@ export default function Profile({ user }) {
     setSize(size + 1);
   };
 
-  const loading = isValidating && data?.length !== size;
+  const loading = !((data && data.length === size) || !isValidating);
   if (error?.response.status === 404) {
     router.push("/404");
   }

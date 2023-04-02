@@ -24,7 +24,7 @@ export default function Home({ user }) {
     fetcher,
     { revalidateAll: true, refreshInterval: 1000 }
   );
-  const loading = isValidating && data?.length !== size;
+  const loading = !((data && data.length === size) || !isValidating);
   const addSearch = () => {
     setSize(size + 1);
   };
