@@ -19,10 +19,11 @@ export default async function handler(req, res) {
     switch (req.method) {
       case "GET": {
         const limit = req.query.limit;
-        const type = req.query.data[0];
+        const postsType = req.query.data[0];
         const search = Math.max(0, req.query.page - 1);
+        const type = req.query.type;
         let options = {};
-        if (type === "following") {
+        if (postsType === "following") {
           options = {
             author: { $in: user.following },
           };
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
           .limit(limit)
           .skip(limit * search)
           .sort({ createdAt: -1 });
-        const retweets = await Retweet.find(options)
+        const retweets = await Retweet.find({ ...options, model_type: type })
           .populate([
             {
               path: "author",
@@ -54,7 +55,7 @@ export default async function handler(req, res) {
             },
             {
               path: "tweet",
-              model: "Tweet",
+              model: type,
             },
             {
               path: "tweet",

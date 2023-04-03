@@ -13,8 +13,10 @@ import { CiCircleMore } from "react-icons/ci";
 import { FiFeather, FiMoreHorizontal } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Sidebar({ user }) {
+  const router = useRouter();
   const [selector, setSelector] = useState(false);
   const selectorRef = useRef(null);
 
@@ -111,7 +113,11 @@ export default function Sidebar({ user }) {
           </Link>
           <button
             onClick={() => {
-              document.querySelector(".tweet-input").focus();
+              if (document.querySelector(".tweet-input")) {
+                document.querySelector(".tweet-input").focus();
+              } else {
+                router.push("/home");
+              }
             }}
             className="my-2 w-10/12 sm:w-10 h-10 xl:w-10/12 xl:mx-auto bg-blue-100 text-white font-bold rounded-full xl:rounded flex justify-center items-center"
           >

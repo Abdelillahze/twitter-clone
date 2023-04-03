@@ -57,7 +57,8 @@ export default async function handler(req, res) {
 
     const limit = req.query.limit;
     const search = Math.max(0, req.query.page - 1);
-    const tweets = await Tweet.find({ author: user._id })
+    const type = req.query.type;
+    const tweets = await Tweet.find({ author: user._id, model_type: type })
       .populate([
         {
           path: "author",
@@ -83,7 +84,7 @@ export default async function handler(req, res) {
         },
         {
           path: "tweet",
-          model: "Tweet",
+          model: type,
         },
         {
           path: "tweet",

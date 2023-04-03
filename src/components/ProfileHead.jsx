@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function ProfileHead({ fetchedUser }) {
   const router = useRouter();
   return (
-    <div className="flex z-10 fixed top-0 h-14 items-center px-4 backdrop-blur-md">
+    <div className="w-full flex z-10 sticky top-0 h-14 items-center px-4 backdrop-blur-md">
       <Image
         onClick={() => {
           document.querySelector(".sidebar").style.translate = "100%";

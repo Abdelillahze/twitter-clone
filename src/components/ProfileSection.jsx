@@ -90,7 +90,7 @@ export default function ProfileSection({
   };
 
   return (
-    <div className="section w-full mt-14">
+    <div className="section w-full">
       {showImage &&
         createPortal(
           <ImageView

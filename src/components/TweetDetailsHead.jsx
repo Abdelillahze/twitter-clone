@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function TweetDetailsHead({ user }) {
+  const router = useRouter();
   return (
-    <div className="flex py-2 justify-start items-start fixed top-0 h-14 sm:items-center px-4 backdrop-blur-md">
+    <div className="w-full flex py-2 justify-start items-start sticky top-0 h-14 sm:items-center px-4 backdrop-blur-md">
       <Image
         onClick={() => {
           document.querySelector(".sidebar").style.translate = "100%";
@@ -17,9 +19,10 @@ export default function TweetDetailsHead({ user }) {
         height="30"
       />
       <div className="flex items-center">
-        <Link href="/home">
-          <FiArrowLeft className="mr-2 h-10 w-10 px-2 py-2 rounded-full transition-colors hover:bg-white-10" />
-        </Link>
+        <FiArrowLeft
+          onClick={() => router.back()}
+          className="cursor-pointer mr-2 h-10 w-10 px-2 py-2 rounded-full transition-colors hover:bg-white-10"
+        />
         <h1 className="font-bold">Tweet</h1>
       </div>
     </div>

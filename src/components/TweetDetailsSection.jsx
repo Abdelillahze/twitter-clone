@@ -10,19 +10,35 @@ import CommentMaker from "./CommentMaker";
 import { useRouter } from "next/router";
 import Selector from "./Selector";
 import Tweet from "./Tweet";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function TweetDetailsSection({ user, tweet, refresh }) {
   const router = useRouter();
   const date = moment(tweet.createdAt);
   const [selector, setSelector] = useState(false);
+  const [comment, setComment] = useState(false);
   const selectorRef = useRef(null);
+
+  useEffect(() => {
+    if (tweet.tweet && tweet.retweets !== undefined) {
+      setComment(true);
+    }
+  }, []);
 
   if (selector && selectorRef.current) {
     selectorRef.current.style.display = "block";
   } else if (selectorRef.current) {
     selectorRef.current.style.display = "none";
   }
+
+  const retweetHandler = async () => {
+    const res = await axios.patch(
+      `/api/tweet/${tweet._id}/retweet?type=${comment ? "Comment" : "Tweet"}`
+    );
+    refresh();
+
+    return res;
+  };
 
   const deleteHandler = async () => {
     setSelector(false);
@@ -41,7 +57,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
   };
 
   return (
-    <div className="mt-14 py-2">
+    <div className="py-2">
       <div className="border border-transparent border-b-borderColor pb-4 px-4">
         <div className="flex justify-between mb-4">
           <div className="flex">
@@ -124,13 +140,26 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
       )}
       <div className="w-full flex px-10 py-2 justify-between text-p border border-transparent border-b-borderColor">
         <div className="group">
-          <button className="flex items-center transition-colors group-hover:text-blue-100 ">
+          <button
+            onClick={() => {
+              document.querySelector(".tweet-input").focus();
+            }}
+            className="flex items-center transition-colors group-hover:text-blue-100 "
+          >
             <FaRegComment className="w-10 h-10 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full" />
           </button>
         </div>
         <div className="group">
-          <button className="flex items-center transition-colors group-hover:text-green-100">
-            <AiOutlineRetweet className="w-10 h-10 mr-2 px-2 py-2 rounded-full group-hover:bg-green-10" />
+          <button
+            onClick={retweetHandler}
+            className="flex items-center transition-colors group-hover:text-green-100"
+          >
+            <AiOutlineRetweet
+              className={`w-10 h-10 mr-2 px-2 py-2 rounded-full group-hover:bg-green-10 ${
+                tweet.retweets.find((retweet) => retweet.author === user._id) &&
+                "text-green-100"
+              }`}
+            />
           </button>
         </div>
         <div className="group">
@@ -153,6 +182,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
           user={user}
           tweet={comment}
           refresh={refresh}
+          tweetAuthor={tweet.author.username}
         />
       ))}
     </div>

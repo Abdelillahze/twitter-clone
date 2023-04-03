@@ -44,45 +44,61 @@ export default async function handler(req, res) {
       case "GET": {
         const tweetId = req.query.tweetId;
         let tweet = await Tweet.findById(tweetId).populate([
-          { path: "author", Model: "User" },
-          { path: "likes", Model: "Like" },
+          { path: "author", model: "User" },
+          { path: "likes", model: "Like" },
+          { path: "retweets", model: "Retweet" },
           {
             path: "comments",
             populate: {
               path: "author",
-              Model: "User",
+              model: "User",
             },
           },
           {
             path: "comments",
             populate: {
               path: "likes",
-              Model: "Like",
+              model: "Like",
+            },
+          },
+          {
+            path: "comments",
+            populate: {
+              path: "retweets",
+              model: "Retweet",
             },
           },
         ]);
 
         if (!tweet) {
           tweet = await Comment.findById(tweetId).populate([
-            { path: "author", Model: "User" },
-            { path: "likes", Model: "Like" },
+            { path: "author", model: "User" },
+            { path: "likes", model: "Like" },
+            { path: "retweets", model: "Retweet" },
             {
               path: "comments",
               populate: {
                 path: "author",
-                Model: "User",
+                model: "User",
               },
             },
             {
               path: "comments",
               populate: {
                 path: "likes",
-                Model: "Like",
+                model: "Like",
+              },
+            },
+            {
+              path: "comments",
+              populate: {
+                path: "retweets",
+                model: "Retweet",
               },
             },
           ]);
           if (!tweet) {
-            return res.json(404).json({ error: "la" });
+            return res.status(404).json({ error: "la" });
           }
         }
 

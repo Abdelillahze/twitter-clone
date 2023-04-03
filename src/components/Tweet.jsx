@@ -9,11 +9,12 @@ import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import Selector from "./Selector";
 
-export default function Tweet({ user, tweet, refresh }) {
+export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
   const [selector, setSelector] = useState(false);
   const selectorRef = useRef(null);
   const [retweeted, setRetweeted] = useState(false);
   const [comment, setComment] = useState(false);
+  const [mine, setMine] = useState(false);
   const [tweetData, setTweetData] = useState(tweet);
   const date = moment(tweet.createdAt).fromNow();
 
@@ -33,6 +34,11 @@ export default function Tweet({ user, tweet, refresh }) {
     } else {
       setTweetData(tweet);
     }
+    if (!retweeted && tweet.author._id === user._id) {
+      setMine(true);
+    } else if (retweeted && tweet.tweet.author._id === user._id) {
+      setMine(true);
+    }
   }, [tweet]);
 
   const LikeHandler = async () => {
@@ -43,7 +49,11 @@ export default function Tweet({ user, tweet, refresh }) {
   };
 
   const retweetHandler = async () => {
-    const res = await axios.patch(`/api/tweet/${tweetData._id}/retweet`);
+    const res = await axios.patch(
+      `/api/tweet/${tweetData._id}/retweet?type=${
+        comment ? "Comment" : "Tweet"
+      }`
+    );
     refresh();
 
     return res;
@@ -58,7 +68,7 @@ export default function Tweet({ user, tweet, refresh }) {
   };
 
   return (
-    <div className="flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor">
+    <div className="text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor">
       {retweeted && (
         <div className="ml-8 flex text-p items-center py-2">
           <AiOutlineRetweet className="mr-2 " />{" "}
@@ -81,7 +91,7 @@ export default function Tweet({ user, tweet, refresh }) {
           />
         </Link>
         <div className="flex flex-col w-full">
-          <div className="flex">
+          <div className="flex items-center">
             <Link href={`/${tweetData.author.username}`} className="flex">
               <h1 className="flex items-center mr-2 hover:underline font-bold">
                 {tweetData?.author.name}{" "}
@@ -96,14 +106,14 @@ export default function Tweet({ user, tweet, refresh }) {
             <span className="mr-2 text-p">·</span>
             <span className="mr-2 text-p">{date}</span>
           </div>
-          {comment && (
+          {tweetAuthor && (
             <div className="text-p">
               Replying to{" "}
               <Link
-                href={`/${tweetData.author.username}`}
+                href={`/${tweetAuthor}`}
                 className="text-blue-100 hover:underline"
               >
-                @{tweetData.author.username}
+                @{tweetAuthor}
               </Link>
             </div>
           )}
@@ -188,8 +198,8 @@ export default function Tweet({ user, tweet, refresh }) {
                 "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
               }
               options={[
-                {
-                  label: "Delete",
+                mine && {
+                  label: "delete",
                   onClick: () => {
                     deleteHandler();
                   },

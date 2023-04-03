@@ -7,7 +7,12 @@ const retweetSchema = new Schema({
   },
   tweet: {
     type: Schema.Types.ObjectId,
-    ref: "Tweet",
+    refPath: "model_type",
+  },
+  model_type: {
+    type: String,
+    enum: ["Comment", "Tweet"],
+    required: true,
   },
   createdAt: {
     type: Date,

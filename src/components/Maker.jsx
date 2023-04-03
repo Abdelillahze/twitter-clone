@@ -58,7 +58,7 @@ export default function Maker({
 
   return (
     <div
-      className={`flex px-4 py-4 border border-transparent border-b-borderColor ${className}`}
+      className={`maker flex px-4 py-4 border border-transparent border-b-borderColor ${className}`}
     >
       <Image
         className="w-12 h-12 rounded-full mr-4"

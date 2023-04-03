@@ -8,6 +8,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 export default async function handler(req, res) {
   try {
     const tweetId = req.query.tweetId;
+    const type = req.query.type;
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
       res.json(403).json({ error: "la" });
@@ -33,8 +34,6 @@ export default async function handler(req, res) {
         return res.status(200).json({ retweets });
       }
       case "PATCH": {
-        if (tweet.author._id === me._id) return res.json(200).end();
-
         if (isRetweeted) {
           tweet.retweets = tweet.retweets.filter(
             (retweet) => retweet.toString() !== isRetweeted._id.toString()
@@ -43,7 +42,12 @@ export default async function handler(req, res) {
           tweet.save();
           return res.status(204).end();
         } else {
-          const retweet = await Retweet.create({ author: me, tweet });
+          const retweet = await Retweet.create({
+            author: me,
+            tweet,
+            model_type: type,
+          });
+
           tweet.retweets.push(retweet);
           me.retweets.push(retweet);
           tweet.save();
