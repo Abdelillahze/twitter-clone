@@ -13,6 +13,10 @@ const Selector = forwardRef(({ options, className }, ref) => {
     <div ref={ref} className={className}>
       <ul className="w-full">
         {options.map((option, i) => {
+          if (!option) {
+            return;
+          }
+
           return (
             <li
               key={i}

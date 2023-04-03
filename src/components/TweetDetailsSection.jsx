@@ -18,6 +18,53 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
   const [selector, setSelector] = useState(false);
   const [comment, setComment] = useState(false);
   const selectorRef = useRef(null);
+  const [mine, setMine] = useState(false);
+  const [deleteOption, setDeleteOption] = useState(null);
+  const [followOption, setFollowOption] = useState(null);
+  const [following, setFollowing] = useState(null);
+
+  useEffect(() => {
+    if (tweet.author._id === user._id) {
+      setMine(true);
+    } else {
+      const followingHandler = async () => {
+        fetch();
+        setFollowOption({
+          label: following ? "UnFollow" : "Follow",
+          onClick: () => {
+            followHandler();
+          },
+        });
+      };
+      followingHandler();
+    }
+
+    if (mine) {
+      setDeleteOption({
+        label: "Delete",
+        onClick: () => {
+          deleteHandler();
+        },
+      });
+    }
+  }, [tweet]);
+
+  const fetch = async () => {
+    const res = await axios.get(`/api/follow/${tweet.author._id}`);
+    const data = await res.data;
+
+    setFollowing(data.following);
+  };
+
+  const followHandler = async () => {
+    await axios.patch("/api/follow/", {
+      userId: tweet.author._id,
+    });
+
+    refresh();
+
+    await fetch();
+  };
 
   useEffect(() => {
     if (tweet.tweet && tweet.retweets !== undefined) {
@@ -93,14 +140,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
                 className={
                   "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
                 }
-                options={[
-                  {
-                    label: "Delete",
-                    onClick: () => {
-                      deleteHandler();
-                    },
-                  },
-                ]}
+                options={[followOption, deleteOption]}
               />
             </button>
           </div>

@@ -8,21 +8,27 @@ import { MdVerified } from "react-icons/md";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import Selector from "./Selector";
+import Loading from "./Loading";
 
 export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
   const [selector, setSelector] = useState(false);
   const selectorRef = useRef(null);
   const [retweeted, setRetweeted] = useState(false);
   const [comment, setComment] = useState(false);
-  const [mine, setMine] = useState(false);
-  const [tweetData, setTweetData] = useState(tweet);
+  const [tweetData, setTweetData] = useState(null);
   const date = moment(tweet.createdAt).fromNow();
+  const [mine, setMine] = useState(false);
+  const [deleteOption, setDeleteOption] = useState(null);
+  const [followOption, setFollowOption] = useState(null);
+  const [following, setFollowing] = useState(null);
 
-  if (selector && selectorRef.current) {
-    selectorRef.current.style.display = "block";
-  } else if (selectorRef.current) {
-    selectorRef.current.style.display = "none";
-  }
+  useEffect(() => {
+    if (selector && selectorRef.current) {
+      selectorRef.current.style.display = "block";
+    } else if (selectorRef.current) {
+      selectorRef.current.style.display = "none";
+    }
+  }, [selector]);
 
   useEffect(() => {
     if (tweet.tweet && tweet.retweets === undefined) {
@@ -34,12 +40,50 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
     } else {
       setTweetData(tweet);
     }
-    if (!retweeted && tweet.author._id === user._id) {
-      setMine(true);
-    } else if (retweeted && tweet.tweet.author._id === user._id) {
-      setMine(true);
-    }
   }, [tweet]);
+
+  useEffect(() => {
+    if (tweetData && tweetData.author._id === user._id) {
+      setMine(true);
+    } else if (tweetData) {
+      const followingHandler = async () => {
+        fetch();
+        setFollowOption({
+          label: following ? "UnFollow" : "Follow",
+          onClick: () => {
+            followHandler();
+          },
+        });
+      };
+      followingHandler();
+    }
+
+    if (mine) {
+      setDeleteOption({
+        label: "Delete",
+        onClick: () => {
+          deleteHandler();
+        },
+      });
+    }
+  }, [tweetData]);
+
+  const fetch = async () => {
+    const res = await axios.get(`/api/follow/${tweetData.author._id}`);
+    const data = await res.data;
+
+    setFollowing(data.following);
+  };
+
+  const followHandler = async () => {
+    await axios.patch("/api/follow/", {
+      userId: tweetData.author._id,
+    });
+
+    refresh();
+
+    await fetch();
+  };
 
   const LikeHandler = async () => {
     const res = await axios.patch(`/api/tweet/${tweetData._id}/like`);
@@ -58,7 +102,6 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
 
     return res;
   };
-
   const deleteHandler = async () => {
     setSelector(false);
     const res = await axios.delete(`/api/tweet/${tweetData._id}/`);
@@ -66,6 +109,10 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
 
     return res;
   };
+
+  if (!tweetData) {
+    return <div></div>;
+  }
 
   return (
     <div className="text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor">
@@ -117,7 +164,7 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
               </Link>
             </div>
           )}
-          <Link href={`/${tweet.author.username}/status/${tweet._id}`}>
+          <Link href={`/${tweetData.author.username}/status/${tweetData._id}`}>
             <p className="mb-2">{tweetData.text}</p>
             {tweetData.image && (
               <Image
@@ -197,14 +244,7 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
               className={
                 "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
               }
-              options={[
-                mine && {
-                  label: "delete",
-                  onClick: () => {
-                    deleteHandler();
-                  },
-                },
-              ]}
+              options={[followOption, deleteOption]}
             />
           </button>
         </div>

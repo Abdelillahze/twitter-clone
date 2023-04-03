@@ -21,7 +21,6 @@ export default async function handler(req, res) {
         const limit = req.query.limit;
         const postsType = req.query.data[0];
         const search = Math.max(0, req.query.page - 1);
-        const type = req.query.type;
         let options = {};
         if (postsType === "following") {
           options = {
@@ -47,7 +46,10 @@ export default async function handler(req, res) {
           .limit(limit)
           .skip(limit * search)
           .sort({ createdAt: -1 });
-        const retweets = await Retweet.find({ ...options, model_type: type })
+        const retweetsTweets = await Retweet.find({
+          ...options,
+          model_type: "Tweet",
+        })
           .populate([
             {
               path: "author",
@@ -55,7 +57,7 @@ export default async function handler(req, res) {
             },
             {
               path: "tweet",
-              model: type,
+              model: "Tweet",
             },
             {
               path: "tweet",
@@ -71,21 +73,68 @@ export default async function handler(req, res) {
                 model: "Like",
               },
             },
+            {
+              path: "tweet",
+              populate: {
+                path: "retweets",
+                model: "Retweet",
+              },
+            },
           ])
           .limit(limit)
           .skip(limit * search)
           .sort({ createdAt: -1 });
-        const data = [...tweets, ...retweets].sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          if (dateA < dateB) {
-            return 1;
+        const retweetsComments = await Retweet.find({
+          ...options,
+          model_type: "Comment",
+        })
+          .populate([
+            {
+              path: "author",
+              model: "User",
+            },
+            {
+              path: "tweet",
+              model: "Comment",
+            },
+            {
+              path: "tweet",
+              populate: {
+                path: "author",
+                model: "User",
+              },
+            },
+            {
+              path: "tweet",
+              populate: {
+                path: "likes",
+                model: "Like",
+              },
+            },
+            {
+              path: "tweet",
+              populate: {
+                path: "retweets",
+                model: "Retweet",
+              },
+            },
+          ])
+          .limit(limit)
+          .skip(limit * search)
+          .sort({ createdAt: -1 });
+        const data = [...tweets, ...retweetsTweets, ...retweetsComments].sort(
+          (a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            if (dateA < dateB) {
+              return 1;
+            }
+            if (dateA > dateB) {
+              return -1;
+            }
+            return 0;
           }
-          if (dateA > dateB) {
-            return -1;
-          }
-          return 0;
-        });
+        );
         return res.status(200).json({ data });
       }
     }
