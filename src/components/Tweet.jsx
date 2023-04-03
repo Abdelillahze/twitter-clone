@@ -21,6 +21,7 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
   const [deleteOption, setDeleteOption] = useState(null);
   const [followOption, setFollowOption] = useState(null);
   const [following, setFollowing] = useState(null);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (selector && selectorRef.current) {
@@ -164,18 +165,33 @@ export default function Tweet({ user, tweet, refresh, tweetAuthor }) {
               </Link>
             </div>
           )}
-          <Link href={`/${tweetData.author.username}/status/${tweetData._id}`}>
-            <p className="mb-2">{tweetData.text}</p>
-            {tweetData.image && (
-              <Image
-                className="rounded mb-2"
-                src={tweetData.image}
-                alt="image"
-                width="1000"
-                height="1000"
-              />
+          <p className="mb-2">
+            <Link
+              href={`/${tweetData.author.username}/status/${tweetData._id}`}
+            >
+              {tweetData.text.length > 150
+                ? tweetData.text.slice(0, 150)
+                : tweetData.text}
+              {showMore && tweetData.text.slice(150)}
+            </Link>{" "}
+            {tweetData.text.length > 150 && (
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className="font-bold cursor-pointer hover:underline"
+              >
+                {showMore ? "show less" : "show more..."}
+              </button>
             )}
-          </Link>
+          </p>
+          {tweetData.image && (
+            <Image
+              className="rounded mb-2"
+              src={tweetData.image}
+              alt="image"
+              width="1000"
+              height="1000"
+            />
+          )}
           <div className="flex w-2/3 justify-between text-p">
             <div className="group">
               <Link

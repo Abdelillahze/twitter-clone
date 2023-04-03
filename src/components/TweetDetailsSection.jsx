@@ -22,6 +22,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
   const [deleteOption, setDeleteOption] = useState(null);
   const [followOption, setFollowOption] = useState(null);
   const [following, setFollowing] = useState(null);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (tweet.author._id === user._id) {
@@ -145,7 +146,18 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
             </button>
           </div>
         </div>
-        <p className="mb-4">{tweet.text}</p>
+        <p className="mb-4">
+          {tweet.text.length > 150 ? tweet.text.slice(0, 150) : tweet.text}
+          {showMore && tweet.text.slice(150)}{" "}
+          {tweet.text.length > 150 && (
+            <button
+              onClick={() => setShowMore(!showMore)}
+              className="font-bold cursor-pointer hover:underline"
+            >
+              {showMore ? "show less" : "show more..."}
+            </button>
+          )}
+        </p>
         <p className="text-p">
           {date.format("LT")} · {date.format("ll")}
         </p>
