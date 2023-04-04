@@ -217,15 +217,15 @@ export default forwardRef(function Tweet(
                     ? tweetData.text.slice(0, 150)
                     : tweetData.text}
                   {showMore && tweetData.text.slice(150)}
-                  {tweetData.text.length > 150 && (
-                    <button
-                      onClick={() => setShowMore(!showMore)}
-                      className="font-bold cursor-pointer hover:underline"
-                    >
-                      {showMore ? "show less" : "show more..."}
-                    </button>
-                  )}
                 </Link>
+                {tweetData.text.length > 150 && (
+                  <button
+                    onClick={() => setShowMore(!showMore)}
+                    className="font-bold cursor-pointer hover:underline"
+                  >
+                    {showMore ? "show less" : "show more..."}
+                  </button>
+                )}
               </>
             )}
           </p>
