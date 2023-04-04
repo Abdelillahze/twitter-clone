@@ -6,7 +6,7 @@ import { MdVolumeOff, MdVolumeUp, MdVolumeDown } from "react-icons/md";
 import Loading from "./Loading";
 import moment from "moment";
 
-export default function Player({ src, className, alt }) {
+export default function Player({ src, className, alt, volumeLocalStorage }) {
   const videoRef = useRef(null);
   const parentRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -15,8 +15,11 @@ export default function Player({ src, className, alt }) {
   const [currentDuration, setCurrentDuration] = useState(0);
   const [muted, setMuted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [showVolume, setShowVolume] = useState(false);
+  const [localVolume, setLocalVolume] = useState(
+    localStorage.getItem("volume")
+  );
+  const [volume, setVolume] = useState(localVolume ? localVolume : 1);
+  const [showVolume, setShowVolume] = useState(1);
   const pause = () => {
     setIsPlaying(false);
   };
@@ -52,6 +55,26 @@ export default function Player({ src, className, alt }) {
   };
 
   useEffect(() => {
+    setLocalVolume(localStorage.getItem("volume"));
+  }, [localStorage.getItem("volume")]);
+
+  useEffect(() => {
+    localStorage.setItem("volume", volume);
+
+    if (Number(volume) === 0) {
+      setMuted(true);
+    } else if (Number(volume) > 0) {
+      setMuted(false);
+    }
+
+    if (muted) {
+      videoRef.current.muted = true;
+    } else if (!muted) {
+      videoRef.current.muted = false;
+    }
+  }, [volume, muted]);
+
+  useEffect(() => {
     if (!videoRef.current) return;
     if (!parentRef.current) return;
 
@@ -76,11 +99,6 @@ export default function Player({ src, className, alt }) {
     videoRef.current.ontimeupdate = () => {
       setCurrentDuration(videoRef.current?.currentTime);
     };
-    if (volume === 0) {
-      setMuted(true);
-    } else if (volume > 0) {
-      setMuted(false);
-    }
 
     videoRef.current.volume = volume;
     videoRef.current.currentTime = currentDuration;
@@ -115,12 +133,6 @@ export default function Player({ src, className, alt }) {
         }
       }
     }
-
-    if (muted) {
-      videoRef.current.muted = true;
-    } else if (!muted) {
-      videoRef.current.muted = false;
-    }
   }, [isPlaying, fullScreen, muted, volume]);
 
   return (
@@ -142,7 +154,15 @@ export default function Player({ src, className, alt }) {
           step="0.1"
           max={videoDuration.toFixed(1)}
           value={currentDuration}
-          onChange={(e) => setCurrentDuration(e.target.value)}
+          onGotPointerCapture={() => {
+            setIsPlaying(false);
+          }}
+          onLostPointerCapture={() => {
+            setIsPlaying(true);
+          }}
+          onChange={(e) => {
+            setCurrentDuration(e.target.value);
+          }}
           className={`${rangeClass} player-bar rotate-0 w-full bg-white-50 mb-2`}
         />
         <div className={`${part} justify-between`}>
@@ -160,17 +180,19 @@ export default function Player({ src, className, alt }) {
             </p>
             <div className="relative ">
               {showVolume && (
-                <div className="absolute bottom-8 left-1/2">
+                <div
+                  onMouseOver={handleHoverIn}
+                  onMouseOut={handleHoverOut}
+                  className="absolute bottom-4 pb-4 left-1/2"
+                >
                   <input
-                    onMouseOver={handleHoverIn}
-                    onMouseOut={handleHoverOut}
                     type="range"
                     min="0"
-                    max="100"
-                    value={volume * 100}
-                    onChange={(e) =>
-                      setVolume(e.target.value === 0 ? 0 : e.target.value / 100)
-                    }
+                    step={"0.1"}
+                    onInput={(e) => setVolume(e.target.value)}
+                    max="1"
+                    value={Number(volume).toFixed(1)}
+                    onChange={(e) => setVolume(e.target.value)}
                     className={rangeClass}
                   />
                 </div>
@@ -224,10 +246,10 @@ export default function Player({ src, className, alt }) {
 }
 
 const controls =
-  "w-full absolute z-20 bottom-2 px-2 flex flex-col justify-between";
+  "w-full absolute z-10 bottom-2 px-2 flex flex-col justify-between";
 const part = "w-full flex items-center";
 const playerButton =
   "cursor-pointer w-10 h-10 hover:bg-white-10 rounded-full py-1 transition-colors";
 const volumeClass = `${playerButton} py-2`;
 const rangeClass =
-  "cursor-pointer w-20 h-1  translate-y-1/2 origin-top-left -rotate-90 bg-borderColor appearance-none rounded-full outline-none hover:border-0 accent-white-100";
+  "cursor-pointer w-20 h-1 origin-top-left -rotate-90 bg-borderColor appearance-none rounded-full outline-none hover:border-0 accent-white-100";
