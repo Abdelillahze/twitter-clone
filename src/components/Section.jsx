@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, createRef, useState, useCallback } from "react";
 import SectionHead from "./SectionHead";
 import Tweet from "./Tweet";
 import TweetMaker from "./TweetMaker";
@@ -9,27 +9,42 @@ export default function Section({
   data,
   refresh,
   type,
+  size,
   loading,
   changePostsType,
   addSearch,
 }) {
   const section = useRef(null);
+  const observer = useRef(null);
 
-  useEffect(() => {
-    document.addEventListener("scroll", (event) => {
-      const end = document.documentElement.scrollHeight - window.innerHeight;
-      if (window.scrollY === end) {
-        addSearch();
+  const lastTweetRef = useCallback((node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        addSearch(size);
       }
     });
-  }, []);
+    if (node) observer.current.observe(node);
+  });
 
   const tweets = [];
   for (let i = 0; i < data?.length; i++) {
     tweets.push(
-      data[i].data.map((tweet) => {
+      data[i].data.map((tweet, index) => {
+        let last = false;
+        if (i + 1 === data.length && index + 1 === data[i].data.length) {
+          last = true;
+        }
         return (
-          <Tweet user={user} refresh={refresh} key={tweet._id} tweet={tweet} />
+          <Tweet
+            ref={last ? lastTweetRef : null}
+            user={user}
+            refresh={refresh}
+            key={tweet._id}
+            tweet={tweet}
+          />
         );
       })
     );

@@ -30,8 +30,14 @@ export default async function handler(req, res) {
         return res.status(200).json({ comments });
       }
       case "PATCH": {
-        const text = req.body.text;
-        const comment = await Comment.create({ author: me, tweet, text });
+        const { text, image, video } = req.body;
+        const comment = await Comment.create({
+          author: me,
+          tweet,
+          text,
+          image,
+          video,
+        });
         tweet.comments.push(comment);
         tweet.save();
         return res.status(204).end();

@@ -94,7 +94,7 @@ export default function ProfileSection({
       {showImage &&
         createPortal(
           <ImageView
-            image={fetchedUser.image.replace(/=.+/g, "=s500-c")}
+            image={fetchedUser.image}
             changeShowImage={changeShowImage}
           />,
           parent
@@ -107,9 +107,10 @@ export default function ProfileSection({
           />,
           parent
         )}
-      <div className="w-full h-44 bg-banner">
+      <div className="w-full h-48 bg-banner">
         {fetchedUser.banner && (
           <Image
+            className="h-full object-cover"
             src={fetchedUser.banner}
             alt={"banner"}
             width="2000"
@@ -123,7 +124,7 @@ export default function ProfileSection({
             onClick={() => setShowImage(true)}
             quality="100"
             className="w-full h-full rounded-full hover:opacity-90"
-            src={fetchedUser.image.replace(/=.+/g, "=s500-c")}
+            src={fetchedUser.image}
             alt={"pfp"}
             sizes="50vw"
             fill={true}

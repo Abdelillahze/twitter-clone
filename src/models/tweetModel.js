@@ -21,6 +21,9 @@ const tweetSchema = new Schema({
   image: {
     type: String,
   },
+  video: {
+    type: String,
+  },
   comments: [
     {
       type: Schema.Types.ObjectId,
@@ -40,7 +43,6 @@ const tweetSchema = new Schema({
     },
   ],
 });
-
 
 const tweetModel = models.Tweet || model("Tweet", tweetSchema);
 

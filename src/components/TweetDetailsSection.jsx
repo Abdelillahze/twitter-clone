@@ -146,7 +146,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
             </button>
           </div>
         </div>
-        <p className="mb-4">
+        <p className="mb-4 whitespace-pre-wrap">
           {tweet.text.length > 150 ? tweet.text.slice(0, 150) : tweet.text}
           {showMore && tweet.text.slice(150)}{" "}
           {tweet.text.length > 150 && (
@@ -158,6 +158,25 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
             </button>
           )}
         </p>
+        {tweet.image && (
+          <Image
+            className="rounded mb-4"
+            src={tweet.image}
+            alt="image"
+            width="1000"
+            height="1000"
+          />
+        )}
+        {tweet.video && (
+          <video
+            controls
+            className="rounded mb-4 w-full"
+            src={tweet.video}
+            alt="video"
+            width="1000"
+            height="500"
+          />
+        )}
         <p className="text-p">
           {date.format("LT")} · {date.format("ll")}
         </p>

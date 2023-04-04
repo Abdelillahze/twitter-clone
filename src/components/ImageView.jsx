@@ -19,7 +19,7 @@ export default function ImageView({ image, changeShowImage }) {
         <Image
           quality="100"
           className="w-80 h-80 rounded-full"
-          src={image.replace(/=.+/g, "=s500-c")}
+          src={image}
           alt="pfp"
           width="500"
           height="500"

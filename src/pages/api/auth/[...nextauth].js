@@ -41,7 +41,11 @@ export const authOptions = {
           return true;
         }
 
-        await User.create({ ...user, username: createUsername(user.name) });
+        await User.create({
+          ...user,
+          username: createUsername(user.name),
+          image: user.image.replace(/=.+/g, "=s500-c"),
+        });
         return true;
       } catch (err) {
         console.log(err);

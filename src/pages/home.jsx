@@ -22,10 +22,10 @@ export default function Home({ user }) {
   const { data, isValidating, mutate, size, setSize } = useSWRInfinite(
     getKey,
     fetcher,
-    { revalidateAll: true, refreshInterval: 1000 }
+    { refreshInterval: 1000 }
   );
   const loading = !((data && data.length === size) || !isValidating);
-  const addSearch = () => {
+  const addSearch = (size) => {
     setSize(size + 1);
   };
 
@@ -40,6 +40,7 @@ export default function Home({ user }) {
           user={user}
           data={data}
           refresh={mutate}
+          size={size}
           type={type}
           changePostsType={changePostsType}
           addSearch={addSearch}

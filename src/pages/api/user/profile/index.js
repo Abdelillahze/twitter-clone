@@ -18,8 +18,12 @@ export default async function handler(req, res) {
         return res.status(200).json({ user });
       }
       case "PATCH": {
-        const { name, bio } = req.body;
+        const { name, bio, image, banner } = req.body;
 
+        if (image) {
+          user.image = image;
+        }
+        user.banner = banner;
         user.name = name;
         user.bio = bio;
         user.save();

@@ -23,8 +23,8 @@ export default async function handler(req, res) {
         return res.status(200).json({ tweets });
       }
       case "POST": {
-        const text = req.body.text;
-        const tweet = await Tweet.create({ text, author: user });
+        const { text, image, video } = req.body;
+        const tweet = await Tweet.create({ text, author: user, image, video });
 
         user.tweets.push(tweet);
         user.save();

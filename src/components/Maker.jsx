@@ -15,8 +15,10 @@ export default function Maker({
   const inputFileRef = useRef(null);
   const [data, setData] = useState({
     input: "",
-    selectedFile: null,
+    selectedImageFile: null,
     selectedImage: null,
+    selectedVideoFile: null,
+    selectedVideo: null,
     showEmojis: false,
   });
   const [Emojis, setEmojis] = useState(null);
@@ -24,8 +26,10 @@ export default function Maker({
   useEffect(() => {
     setData({
       input: "",
-      selectedFile: null,
+      selectedImageFile: null,
       selectedImage: null,
+      selectedVideoFile: null,
+      selectedVideo: null,
       showEmojis: false,
     });
   }, [upload]);
@@ -91,8 +95,28 @@ export default function Maker({
                 onClick={() => {
                   setData((data) => ({
                     ...data,
-                    selectedFile: null,
+                    selectedImageFile: null,
                     selectedImage: null,
+                  }));
+                }}
+                className="absolute top-2 left-2 w-8 h-8 px-2 py-2 bg-p rounded-full cursor-pointer transition-opacity hover:opacity-90"
+              />
+            </div>
+          )}
+          {data.selectedVideo && (
+            <div className="relative">
+              <video
+                controls
+                className="w-full h-fit rounded"
+                src={data.selectedVideo}
+                alt={"video"}
+              />
+              <IoMdClose
+                onClick={() => {
+                  setData((data) => ({
+                    ...data,
+                    selectedFileVideo: null,
+                    selectedVideo: null,
                   }));
                 }}
                 className="absolute top-2 left-2 w-8 h-8 px-2 py-2 bg-p rounded-full cursor-pointer transition-opacity hover:opacity-90"
@@ -109,11 +133,19 @@ export default function Maker({
                 onChange={(e) => {
                   if (e.target.files) {
                     const file = e.target.files[0];
-                    setData((data) => ({
-                      ...data,
-                      selectedImage: URL.createObjectURL(file),
-                      selectedFile: file,
-                    }));
+                    if (file?.type.includes("image")) {
+                      setData((data) => ({
+                        ...data,
+                        selectedImage: URL.createObjectURL(file),
+                        selectedImageFile: file,
+                      }));
+                    } else if (file.type.includes("video")) {
+                      setData((data) => ({
+                        ...data,
+                        selectedVideo: URL.createObjectURL(file),
+                        selectedVideoFile: file,
+                      }));
+                    }
                   }
                 }}
                 type="file"
@@ -141,7 +173,13 @@ export default function Maker({
           </div>
 
           <button
-            onClick={() => handler(data.input)}
+            onClick={() =>
+              handler(
+                data.input,
+                data.selectedImageFile,
+                data.selectedVideoFile
+              )
+            }
             disabled={!data.input.trim()}
             className="text-white bg-blue-100 px-4 py-2 rounded-full disabled:opacity-50 disabled:cursor-default"
           >
