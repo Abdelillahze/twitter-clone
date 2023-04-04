@@ -38,14 +38,12 @@ export default function Section({
           last = true;
         }
         return (
-          <div key={tweet._id}>
-            <Tweet
-              ref={last ? lastTweetRef : null}
-              user={user}
-              refresh={refresh}
-              tweet={tweet}
-            />
-          </div>
+          <Tweet
+            ref={last ? lastTweetRef : null}
+            user={user}
+            refresh={refresh}
+            tweet={tweet}
+          />
         );
       })
     );

@@ -10,6 +10,7 @@ import { useEffect, useState, useRef } from "react";
 import Selector from "./Selector";
 import Loading from "./Loading";
 import { forwardRef } from "react";
+import Player from "./Player";
 
 export default forwardRef(function Tweet(
   { user, tweet, refresh, tweetAuthor },
@@ -124,8 +125,7 @@ export default forwardRef(function Tweet(
 
   return (
     <div
-      ref={ref}
-      className="text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor"
+      className={`transition-all text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor`}
     >
       {retweeted && (
         <div className="ml-8 flex text-p items-center py-2">
@@ -175,7 +175,7 @@ export default forwardRef(function Tweet(
               </Link>
             </div>
           )}
-          <p className="w-full mb-2 whitespace-pre-wrap">
+          <p ref={ref} className="w-full mb-2 whitespace-pre-wrap">
             {url ? (
               tweetData.text.split(new RegExp(`(?=${url[0]})`)).map((t, i) => {
                 if (t === url[0]) {
@@ -243,16 +243,11 @@ export default forwardRef(function Tweet(
             </Link>
           )}
           {tweetData.video && (
-            <Link
-              href={`/${tweetData.author.username}/status/${tweetData._id}`}
-            >
-              <video
-                controls
-                className="rounded mb-2"
-                src={tweetData.video}
-                alt="video"
-              />
-            </Link>
+            <Player
+              className="w-full rounded mb-2"
+              src={tweetData.video}
+              alt="video"
+            />
           )}
           <div className="flex w-2/3 justify-between text-p">
             <div className="group">

@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import Selector from "./Selector";
 import Tweet from "./Tweet";
 import { useState, useRef, useEffect } from "react";
+import Player from "./Player";
 
 export default function TweetDetailsSection({ user, tweet, refresh }) {
   const router = useRouter();
@@ -168,8 +169,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
           />
         )}
         {tweet.video && (
-          <video
-            controls
+          <Player
             className="rounded mb-4 w-full"
             src={tweet.video}
             alt="video"
@@ -248,14 +248,12 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
       </div>
       <CommentMaker user={user} tweetId={tweet._id} />
       {tweet.comments.map((comment) => (
-        <div key={comment._id}>
-          <Tweet
-            user={user}
-            tweet={comment}
-            refresh={refresh}
-            tweetAuthor={tweet.author.username}
-          />
-        </div>
+        <Tweet
+          user={user}
+          tweet={comment}
+          refresh={refresh}
+          tweetAuthor={tweet.author.username}
+        />
       ))}
     </div>
   );

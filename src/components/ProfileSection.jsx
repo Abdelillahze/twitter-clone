@@ -45,11 +45,7 @@ export default function ProfileSection({
   for (let i = 0; i < data?.length; i++) {
     tweets.push(
       data[i].data.map((tweet) => {
-        return (
-          <div key={tweet._id}>
-            <Tweet user={user} refresh={refresh} tweet={tweet} />
-          </div>
-        );
+        return <Tweet user={user} refresh={refresh} tweet={tweet} />;
       })
     );
   }
