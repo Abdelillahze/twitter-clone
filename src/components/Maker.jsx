@@ -11,27 +11,31 @@ export default function Maker({
   buttonName,
   upload,
   className,
+  info,
 }) {
   const inputFileRef = useRef(null);
   const [data, setData] = useState({
-    input: "",
-    selectedImageFile: null,
-    selectedImage: null,
-    selectedVideoFile: null,
-    selectedVideo: null,
+    input: info && info.text ? info.text : "",
+    selectedImageFile: info && info.image ? info.image : null,
+    selectedImage: info && info.image ? info.image : null,
+    selectedVideoFile: info && info.video ? info.video : null,
+    selectedVideo: info && info.video ? info.video : null,
     showEmojis: false,
   });
   const [Emojis, setEmojis] = useState(null);
+  const tagRegex = /<@(?<username>[^<@>]+)>/gm;
 
   useEffect(() => {
-    setData({
-      input: "",
-      selectedImageFile: null,
-      selectedImage: null,
-      selectedVideoFile: null,
-      selectedVideo: null,
-      showEmojis: false,
-    });
+    if (upload) {
+      setData({
+        input: "",
+        selectedImageFile: null,
+        selectedImage: null,
+        selectedVideoFile: null,
+        selectedVideo: null,
+        showEmojis: false,
+      });
+    }
   }, [upload]);
 
   useEffect(() => {

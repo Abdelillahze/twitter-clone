@@ -22,7 +22,7 @@ export default function Home({ user }) {
   const { data, isValidating, mutate, size, setSize } = useSWRInfinite(
     getKey,
     fetcher,
-    { refreshInterval: 1000 }
+    { refreshInterval: 1000, revalidateAll: true }
   );
   const loading = !((data && data.length === size) || !isValidating);
   const addSearch = (size) => {

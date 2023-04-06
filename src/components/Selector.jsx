@@ -1,6 +1,7 @@
 import { forwardRef, useEffect } from "react";
+import Loading from "./Loading";
 
-const Selector = forwardRef(({ options, className }, ref) => {
+const Selector = forwardRef(({ options, className, loading }, ref) => {
   useEffect(() => {
     document.addEventListener("click", (event) => {
       if (ref.current && !ref.current.parentNode.contains(event.target)) {
@@ -12,6 +13,7 @@ const Selector = forwardRef(({ options, className }, ref) => {
   return (
     <div ref={ref} className={className}>
       <ul className="w-full">
+        {loading && <Loading className={"mx-4 my-2 mt-2"} />}
         {options.map((option, i) => {
           if (!option) {
             return;

@@ -12,6 +12,7 @@ import Selector from "./Selector";
 import Tweet from "./Tweet";
 import { useState, useRef, useEffect } from "react";
 import Player from "./Player";
+import Maker from "./Maker";
 
 export default function TweetDetailsSection({ user, tweet, refresh }) {
   const router = useRouter();
@@ -19,15 +20,56 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
   const [selector, setSelector] = useState(false);
   const [comment, setComment] = useState(false);
   const selectorRef = useRef(null);
-  const [mine, setMine] = useState(false);
   const [deleteOption, setDeleteOption] = useState(null);
   const [followOption, setFollowOption] = useState(null);
   const [following, setFollowing] = useState(null);
   const [showMore, setShowMore] = useState(false);
+  const [editOption, setEditOption] = useState(null);
+  const urlRegex =
+    /([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#\.]?[\w-]+)*\/?/g;
+  const [url, setUrl] = useState(null);
+  const tagRegex = /<@(?<username>[^<@>]+)>/gm;
+  const [tag, setTag] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [edit, setEdit] = useState(false);
+  const [upload, setUpload] = useState(false);
 
   useEffect(() => {
+    if (tweet) {
+      const isUrl = tweet.text.match(urlRegex);
+      setUrl(isUrl);
+      const isThereTag = tweet.text.match(tagRegex);
+      setTag(isThereTag);
+
+      if (isThereTag) {
+        const {
+          groups: { username: Username },
+        } = tagRegex.exec(isThereTag);
+        const isUsername = async () => {
+          const res = await axios.get(`/api/user/${Username}?only=true`);
+          const data = await res.data;
+          const isTag = data;
+          setUsername(Username);
+          if (!isTag) {
+            setTag(null);
+          }
+        };
+        isUsername();
+      }
+    }
     if (tweet.author._id === user._id) {
-      setMine(true);
+      setDeleteOption({
+        label: "Delete",
+        onClick: () => {
+          deleteHandler();
+        },
+      });
+      setEditOption({
+        label: "Edit",
+        onClick: () => {
+          setEdit(true);
+        },
+      });
     } else {
       const followingHandler = async () => {
         fetch();
@@ -39,15 +81,6 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
         });
       };
       followingHandler();
-    }
-
-    if (mine) {
-      setDeleteOption({
-        label: "Delete",
-        onClick: () => {
-          deleteHandler();
-        },
-      });
     }
   }, [tweet]);
 
@@ -80,6 +113,48 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
     selectorRef.current.style.display = "none";
   }
 
+  const editHandler = async (input, imageFile, videoFile) => {
+    console.log(input, imageFile, videoFile);
+    setUpload(true);
+    let image = null;
+    let video = null;
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      formData.append("upload_preset", "tweets");
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dj1fjrjqx/image/upload`,
+        formData
+      );
+      const data = await res.data;
+      image = data.secure_url;
+    } else if (videoFile) {
+      const formData = new FormData();
+      formData.append("file", videoFile);
+      formData.append("upload_preset", "tweets");
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dj1fjrjqx/video/upload`,
+        formData
+      );
+      const data = await res.data;
+      video = data.secure_url;
+    }
+    console.log(image, video, input);
+    const res = await axios.patch(`/api/tweet/${tweet._id}/edit`, {
+      text: input,
+      image,
+      video,
+    });
+    const data = await res.data;
+
+    setUpload(false);
+    setEdit(false);
+    refresh();
+    return data;
+  };
+
   const retweetHandler = async () => {
     const res = await axios.patch(
       `/api/tweet/${tweet._id}/retweet?type=${comment ? "Comment" : "Tweet"}`
@@ -104,6 +179,18 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
 
     return res;
   };
+
+  if (edit) {
+    return (
+      <Maker
+        user={user}
+        info={tweet}
+        handler={editHandler}
+        upload={upload}
+        buttonName={"Edit"}
+      />
+    );
+  }
 
   return (
     <div className="py-2">
@@ -137,26 +224,80 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
                 onClick={() => setSelector(!selector)}
                 className="w-8 h-8 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full"
               />
-              <Selector
-                ref={selectorRef}
-                className={
-                  "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
-                }
-                options={[followOption, deleteOption]}
-              />
+              {
+                <Selector
+                  ref={selectorRef}
+                  className={
+                    "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
+                  }
+                  loading={!(followOption || deleteOption || editOption)}
+                  options={[followOption, editOption, deleteOption]}
+                />
+              }
             </button>
           </div>
         </div>
         <p className="mb-4 whitespace-pre-wrap">
-          {tweet.text.length > 150 ? tweet.text.slice(0, 150) : tweet.text}
-          {showMore && tweet.text.slice(150)}{" "}
-          {tweet.text.length > 150 && (
-            <button
-              onClick={() => setShowMore(!showMore)}
-              className="font-bold cursor-pointer hover:underline"
-            >
-              {showMore ? "show less" : "show more..."}
-            </button>
+          {url || tag ? (
+            tweet.text
+              .split(new RegExp(`(${url && url[0]}|${tag && tag[0]})`))
+              .map((t, i) => {
+                if (tag && t === tag[0]) {
+                  return (
+                    <Link
+                      className="text-blue-100 bg-blue-10"
+                      href={`/${username}`}
+                    >
+                      @{username}
+                    </Link>
+                  );
+                } else if (url && t === url[0]) {
+                  return (
+                    <a
+                      target="_blank"
+                      className="text-blue-100 hover:underline"
+                      href={url[0]}
+                    >
+                      {url[0]}
+                    </a>
+                  );
+                } else {
+                  return (
+                    <Link
+                      className="w-full"
+                      href={`/${tweet.author.username}/status/${tweet._id}`}
+                    >
+                      {t.length > 150 ? t.slice(0, 150) : t}
+                      {showMore && t.slice(150)}{" "}
+                      {t.length > 150 && (
+                        <button
+                          onClick={() => setShowMore(!showMore)}
+                          className="font-bold cursor-pointer hover:underline"
+                        >
+                          {showMore ? "show less" : "show more..."}
+                        </button>
+                      )}
+                    </Link>
+                  );
+                }
+              })
+          ) : (
+            <>
+              <Link href={`/${tweet.author.username}/status/${tweet._id}`}>
+                {tweet.text.length > 150
+                  ? tweet.text.slice(0, 150)
+                  : tweet.text}
+                {showMore && tweet.text.slice(150)}
+              </Link>
+              {tweet.text.length > 150 && (
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="font-bold cursor-pointer hover:underline"
+                >
+                  {showMore ? "show less" : "show more..."}
+                </button>
+              )}
+            </>
           )}
         </p>
         {tweet.image && (

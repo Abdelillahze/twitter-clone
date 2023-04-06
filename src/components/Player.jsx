@@ -6,9 +6,10 @@ import { MdVolumeOff, MdVolumeUp, MdVolumeDown } from "react-icons/md";
 import Loading from "./Loading";
 import moment from "moment";
 
-export default function Player({ src, className, alt, volumeLocalStorage }) {
+export default function Player({ src, className, alt }) {
   const videoRef = useRef(null);
   const parentRef = useRef(null);
+  const [hover, setHover] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0);
@@ -139,7 +140,24 @@ export default function Player({ src, className, alt, volumeLocalStorage }) {
     <div
       ref={parentRef}
       className={`relative border border-borderColor ${className}`}
+      onMouseMove={() => {
+        setHover(true);
+        if (hover === false) {
+          setTimeout(() => {
+            setHover(false);
+          }, 3000);
+        }
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
     >
+      {!isPlaying && (
+        <BsFillPlayFill
+          onClick={resume}
+          className="cursor-pointer absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16"
+        />
+      )}
       {loading && (
         <Loading
           className={
@@ -147,93 +165,105 @@ export default function Player({ src, className, alt, volumeLocalStorage }) {
           }
         />
       )}
-      <div className={controls}>
-        <input
-          type="range"
-          min="0"
-          step="0.1"
-          max={videoDuration.toFixed(1)}
-          value={currentDuration}
-          onGotPointerCapture={() => {
-            setIsPlaying(false);
+      {!hover && (
+        <span className="absolute bottom-2 left-2 bg-black-70 px-1 py-0.5 rounded text-xs">
+          {moment.utc((videoDuration - currentDuration) * 1000).format("mm:ss")}
+        </span>
+      )}
+      {hover && (
+        <div
+          onMouseMove={() => {
+            console.log("slm");
+            setHover(true);
           }}
-          onLostPointerCapture={() => {
-            setIsPlaying(true);
-          }}
-          onChange={(e) => {
-            setCurrentDuration(e.target.value);
-          }}
-          className={`${rangeClass} player-bar rotate-0 w-full bg-white-50 mb-2`}
-        />
-        <div className={`${part} justify-between`}>
-          <div className={part}>
-            {isPlaying ? (
-              <BsPause className={playerButton} onClick={pause} />
-            ) : (
-              <BsFillPlayFill className={playerButton} onClick={resume} />
-            )}
-          </div>
-          <div className={`${part} justify-end`}>
-            <p>
-              {moment.utc(currentDuration * 1000).format("HH:mm:ss")} /{" "}
-              {moment.utc(videoDuration * 1000).format("HH:mm:ss")}
-            </p>
-            <div className="relative ">
-              {showVolume && (
-                <div
-                  onMouseOver={handleHoverIn}
-                  onMouseOut={handleHoverOut}
-                  className="absolute bottom-4 pb-4 left-1/2"
-                >
-                  <input
-                    type="range"
-                    min="0"
-                    step={"0.1"}
-                    onInput={(e) => setVolume(e.target.value)}
-                    max="1"
-                    value={Number(volume).toFixed(1)}
-                    onChange={(e) => setVolume(e.target.value)}
-                    className={rangeClass}
-                  />
-                </div>
+          className={controls}
+        >
+          <input
+            type="range"
+            min="0"
+            step="0.1"
+            max={videoDuration.toFixed(1)}
+            value={currentDuration}
+            onGotPointerCapture={() => {
+              setIsPlaying(false);
+            }}
+            onLostPointerCapture={() => {
+              setIsPlaying(true);
+            }}
+            onInput={(e) => {
+              setCurrentDuration(e.target.value);
+            }}
+            className={`${rangeClass} player-bar rotate-0 w-full bg-white-50 mb-2`}
+          />
+          <div className={`${part} justify-between`}>
+            <div className={part}>
+              {isPlaying ? (
+                <BsPause className={playerButton} onClick={pause} />
+              ) : (
+                <BsFillPlayFill className={playerButton} onClick={resume} />
               )}
-              {muted ? (
-                <MdVolumeOff
-                  onMouseOver={handleHoverIn}
-                  onMouseOut={handleHoverOut}
-                  onClick={unmute}
-                  className={volumeClass}
-                />
-              ) : volume >= 0.5 ? (
-                <MdVolumeUp
-                  onMouseOver={handleHoverIn}
-                  onMouseOut={handleHoverOut}
-                  onClick={mute}
-                  className={volumeClass}
+            </div>
+            <div className={`${part} justify-end`}>
+              <p>
+                {moment.utc(currentDuration * 1000).format("mm:ss")} /{" "}
+                {moment.utc(videoDuration * 1000).format("mm:ss")}
+              </p>
+              <div className="relative ">
+                {showVolume && (
+                  <div
+                    onMouseOver={handleHoverIn}
+                    onMouseOut={handleHoverOut}
+                    className="absolute bottom-4 pb-4 left-1/2 z-20"
+                  >
+                    <input
+                      type="range"
+                      min="0"
+                      step={"0.1"}
+                      onInput={(e) => setVolume(e.target.value)}
+                      max="1"
+                      value={Number(volume).toFixed(1)}
+                      className={rangeClass}
+                    />
+                  </div>
+                )}
+                {muted ? (
+                  <MdVolumeOff
+                    onMouseOver={handleHoverIn}
+                    onMouseOut={handleHoverOut}
+                    onClick={unmute}
+                    className={volumeClass}
+                  />
+                ) : volume >= 0.5 ? (
+                  <MdVolumeUp
+                    onMouseOver={handleHoverIn}
+                    onMouseOut={handleHoverOut}
+                    onClick={mute}
+                    className={volumeClass}
+                  />
+                ) : (
+                  <MdVolumeDown
+                    onMouseOver={handleHoverIn}
+                    onMouseOut={handleHoverOut}
+                    onClick={mute}
+                    className={volumeClass}
+                  />
+                )}
+              </div>
+              {fullScreen ? (
+                <BiExitFullscreen
+                  onClick={removeFullScreen}
+                  className={`${playerButton} py-2 z-30`}
                 />
               ) : (
-                <MdVolumeDown
-                  onMouseOver={handleHoverIn}
-                  onMouseOut={handleHoverOut}
-                  onClick={mute}
-                  className={volumeClass}
+                <BiFullscreen
+                  onClick={addFullScreen}
+                  className={`${playerButton} py-2 z-30`}
                 />
               )}
             </div>
-            {fullScreen ? (
-              <BiExitFullscreen
-                onClick={removeFullScreen}
-                className={`${playerButton} py-2`}
-              />
-            ) : (
-              <BiFullscreen
-                onClick={addFullScreen}
-                className={`${playerButton} py-2`}
-              />
-            )}
           </div>
         </div>
-      </div>
+      )}
       <video
         onClick={() => setIsPlaying(!isPlaying)}
         ref={videoRef}

@@ -15,6 +15,13 @@ export default async function handler(req, res) {
     }
 
     const username = req.query.username;
+    const onlyUsername = req.query.only;
+
+    if (onlyUsername) {
+      const isExist = await User.findOne({ username });
+      return res.status(200).json(isExist ? true : false);
+    }
+
     const fetchedUser = await User.findOne({ username }).populate([
       {
         path: "tweets",

@@ -11,6 +11,7 @@ import Selector from "./Selector";
 import Loading from "./Loading";
 import { forwardRef } from "react";
 import Player from "./Player";
+import Maker from "./Maker";
 
 export default forwardRef(function Tweet(
   { user, tweet, refresh, tweetAuthor },
@@ -23,12 +24,18 @@ export default forwardRef(function Tweet(
   const [tweetData, setTweetData] = useState(null);
   const date = moment(tweet.createdAt).fromNow();
   const [deleteOption, setDeleteOption] = useState(null);
+  const [editOption, setEditOption] = useState(null);
   const [followOption, setFollowOption] = useState(null);
   const [following, setFollowing] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const urlRegex =
     /([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#\.]?[\w-]+)*\/?/g;
   const [url, setUrl] = useState(null);
+  const tagRegex = /<@(?<username>[^<@>]+)>/gm;
+  const [tag, setTag] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [edit, setEdit] = useState(false);
+  const [upload, setUpload] = useState(false);
 
   useEffect(() => {
     if (selector && selectorRef.current) {
@@ -54,6 +61,24 @@ export default forwardRef(function Tweet(
     if (tweetData) {
       const isUrl = tweetData.text.match(urlRegex);
       setUrl(isUrl);
+      const isThereTag = tweetData.text.match(tagRegex);
+      setTag(isThereTag);
+
+      if (isThereTag) {
+        const {
+          groups: { username: Username },
+        } = tagRegex.exec(isThereTag);
+        const isUsername = async () => {
+          const res = await axios.get(`/api/user/${Username}?only=true`);
+          const data = await res.data;
+          const isTag = data;
+          setUsername(Username);
+          if (!isTag) {
+            setTag(null);
+          }
+        };
+        isUsername();
+      }
     }
 
     if (tweetData && tweetData.author._id === user._id) {
@@ -61,6 +86,12 @@ export default forwardRef(function Tweet(
         label: "Delete",
         onClick: () => {
           deleteHandler();
+        },
+      });
+      setEditOption({
+        label: "Edit",
+        onClick: () => {
+          setEdit(true);
         },
       });
     } else if (tweetData) {
@@ -94,6 +125,48 @@ export default forwardRef(function Tweet(
     await fetch();
   };
 
+  const editHandler = async (input, imageFile, videoFile) => {
+    console.log(input, imageFile, videoFile);
+    setUpload(true);
+    let image = null;
+    let video = null;
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      formData.append("upload_preset", "tweets");
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dj1fjrjqx/image/upload`,
+        formData
+      );
+      const data = await res.data;
+      image = data.secure_url;
+    } else if (videoFile) {
+      const formData = new FormData();
+      formData.append("file", videoFile);
+      formData.append("upload_preset", "tweets");
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dj1fjrjqx/video/upload`,
+        formData
+      );
+      const data = await res.data;
+      video = data.secure_url;
+    }
+    console.log(image, video, input);
+    const res = await axios.patch(`/api/tweet/${tweetData._id}/edit`, {
+      text: input,
+      image,
+      video,
+    });
+    const data = await res.data;
+
+    setUpload(false);
+    setEdit(false);
+    refresh();
+    return data;
+  };
+
   const LikeHandler = async () => {
     const res = await axios.patch(`/api/tweet/${tweetData._id}/like`);
     refresh();
@@ -123,14 +196,31 @@ export default forwardRef(function Tweet(
     return <div></div>;
   }
 
+  if (edit) {
+    return (
+      <Maker
+        user={user}
+        info={tweetData}
+        handler={editHandler}
+        upload={upload}
+        buttonName={"Edit"}
+      />
+    );
+  }
+
   return (
     <div
-      className={`transition-all text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor`}
+      className={`text-sm sm:text-base flex-col h-fit px-4 pb-2 flex transition-colors hover:bg-white-5 border border-transparent border-b-borderColor`}
     >
       {retweeted && (
         <div className="ml-8 flex text-p items-center py-2">
           <AiOutlineRetweet className="mr-2 " />{" "}
-          <Link href={`/${tweet.author.username}`}>
+          <Link
+            href={{
+              pathname: `/[username]`,
+              query: { username: tweetData.author.username },
+            }}
+          >
             <span className="font-bold text-sm hover:underline">
               {tweet.author._id === user._id ? "You" : tweet.author.name}{" "}
               Retweeted
@@ -139,7 +229,13 @@ export default forwardRef(function Tweet(
         </div>
       )}
       <div className={`flex ${retweeted || "mt-4"}`}>
-        <Link href={`/${tweetData.author.username}`} className="h-fit">
+        <Link
+          href={{
+            pathname: `/[username]`,
+            query: { username: tweetData.author.username },
+          }}
+          className="h-fit"
+        >
           <Image
             className="w-12 h-12 rounded-full mr-6"
             src={tweetData.author.image}
@@ -150,7 +246,13 @@ export default forwardRef(function Tweet(
         </Link>
         <div className="flex flex-col w-full">
           <div className="flex items-center">
-            <Link href={`/${tweetData.author.username}`} className="flex">
+            <Link
+              href={{
+                pathname: `/[username]`,
+                query: { username: tweetData.author.username },
+              }}
+              className="flex"
+            >
               <h1 className="flex items-center mr-2 hover:underline font-bold">
                 {tweetData?.author.name}{" "}
                 {tweetData.author.verified && (
@@ -168,7 +270,10 @@ export default forwardRef(function Tweet(
             <div className="text-p">
               Replying to{" "}
               <Link
-                href={`/${tweetAuthor}`}
+                href={{
+                  pathname: `/[username]`,
+                  query: { username: tweetAuthor },
+                }}
                 className="text-blue-100 hover:underline"
               >
                 @{tweetAuthor}
@@ -176,42 +281,68 @@ export default forwardRef(function Tweet(
             </div>
           )}
           <p ref={ref} className="w-full mb-2 whitespace-pre-wrap">
-            {url ? (
-              tweetData.text.split(new RegExp(`(?=${url[0]})`)).map((t, i) => {
-                if (t === url[0]) {
-                  return (
-                    <a
-                      target="_blank"
-                      className="text-blue-100 hover:underline"
-                      href={url[0]}
-                    >
-                      {url[0]}
-                    </a>
-                  );
-                } else {
-                  return (
-                    <Link
-                      className="w-full"
-                      href={`/${tweetData.author.username}/status/${tweetData._id}`}
-                    >
-                      {t.length > 150 ? t.slice(0, 150) : t}
-                      {showMore && t.slice(150)}{" "}
-                      {t.length > 150 && (
-                        <button
-                          onClick={() => setShowMore(!showMore)}
-                          className="font-bold cursor-pointer hover:underline"
-                        >
-                          {showMore ? "show less" : "show more..."}
-                        </button>
-                      )}
-                    </Link>
-                  );
-                }
-              })
+            {url || tag ? (
+              tweetData.text
+                .split(new RegExp(`(${url && url[0]}|${tag && tag[0]})`))
+                .map((t, i) => {
+                  if (tag && t === tag[0]) {
+                    return (
+                      <Link
+                        className="text-blue-100 bg-blue-10"
+                        href={{
+                          pathname: `/[username]`,
+                          query: { username: tweetData.author.username },
+                        }}
+                      >
+                        @{username}
+                      </Link>
+                    );
+                  } else if (url && t === url[0]) {
+                    return (
+                      <a
+                        target="_blank"
+                        className="text-blue-100 hover:underline"
+                        href={url[0]}
+                      >
+                        {url[0]}
+                      </a>
+                    );
+                  } else {
+                    return (
+                      <Link
+                        className="w-full"
+                        href={{
+                          pathname: `/[username]/status/[tweetId]`,
+                          query: {
+                            username: tweetData.author.username,
+                            tweetId: tweetData._id,
+                          },
+                        }}
+                      >
+                        {t.length > 150 ? t.slice(0, 150) : t}
+                        {showMore && t.slice(150)}{" "}
+                        {t.length > 150 && (
+                          <button
+                            onClick={() => setShowMore(!showMore)}
+                            className="font-bold cursor-pointer hover:underline"
+                          >
+                            {showMore ? "show less" : "show more..."}
+                          </button>
+                        )}
+                      </Link>
+                    );
+                  }
+                })
             ) : (
               <>
                 <Link
-                  href={`/${tweetData.author.username}/status/${tweetData._id}`}
+                  href={{
+                    pathname: `/[username]/status/[tweetId]`,
+                    query: {
+                      username: tweetData.author.username,
+                      tweetId: tweetData._id,
+                    },
+                  }}
                 >
                   {tweetData.text.length > 150
                     ? tweetData.text.slice(0, 150)
@@ -231,7 +362,13 @@ export default forwardRef(function Tweet(
           </p>
           {tweetData.image && (
             <Link
-              href={`/${tweetData.author.username}/status/${tweetData._id}`}
+              href={{
+                pathname: `/[username]/status/[tweetId]`,
+                query: {
+                  username: tweetData.author.username,
+                  tweetId: tweetData._id,
+                },
+              }}
             >
               <Image
                 className="rounded mb-2"
@@ -252,7 +389,13 @@ export default forwardRef(function Tweet(
           <div className="flex w-2/3 justify-between text-p">
             <div className="group">
               <Link
-                href={`/${tweetData.author.username}/status/${tweetData._id}`}
+                href={{
+                  pathname: `/[username]/status/[tweetId]`,
+                  query: {
+                    username: tweetData.author.username,
+                    tweetId: tweetData._id,
+                  },
+                }}
               >
                 <button className="flex items-center transition-colors group-hover:text-blue-100 ">
                   <FaRegComment className="w-8 h-8 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full" />
@@ -312,15 +455,16 @@ export default forwardRef(function Tweet(
               onClick={() => setSelector(!selector)}
               className="w-8 h-8 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full"
             />
-            {(followOption || deleteOption) && (
+            {
               <Selector
                 ref={selectorRef}
                 className={
                   "hidden min-w-fit w-full text-white-100 bg-black-100 border border-borderColor rounded absolute bottom-[105%] right-full translate-y-full"
                 }
-                options={[followOption, deleteOption]}
+                loading={!(followOption || deleteOption || editOption)}
+                options={[followOption, editOption, deleteOption]}
               />
-            )}
+            }
           </button>
         </div>
       </div>

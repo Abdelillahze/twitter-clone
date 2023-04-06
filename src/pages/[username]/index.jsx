@@ -7,6 +7,7 @@ import useSWRInfinite from "swr/infinite";
 import ProfileHead from "@/components/ProfileHead";
 import ProfileSection from "@/components/ProfileSection";
 import Loading from "@/components/Loading";
+import { useEffect } from "react";
 
 const fetcher = (...args) => axios.get(...args).then((res) => res.data);
 
@@ -14,6 +15,7 @@ export default function Profile({ user }) {
   const router = useRouter();
   const username = router.query.username;
   const limit = 10;
+  console.log(username);
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.data.length) {
       return null;
@@ -25,7 +27,8 @@ export default function Profile({ user }) {
     getKey,
     fetcher,
     {
-      refreshInterval: 5000,
+      // refreshInterval: 1000,
+      revalidateAll: true,
     }
   );
 
