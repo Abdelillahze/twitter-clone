@@ -272,7 +272,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
                       {t.length > 150 && (
                         <button
                           onClick={() => setShowMore(!showMore)}
-                          className="font-bold cursor-pointer hover:underline"
+                          className="text-blue-100 cursor-pointer hover:underline"
                         >
                           {showMore ? "show less" : "show more..."}
                         </button>
@@ -292,7 +292,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
               {tweet.text.length > 150 && (
                 <button
                   onClick={() => setShowMore(!showMore)}
-                  className="font-bold cursor-pointer hover:underline"
+                  className="text-blue-100 cursor-pointer hover:underline"
                 >
                   {showMore ? "show less" : "show more..."}
                 </button>

@@ -324,7 +324,7 @@ export default forwardRef(function Tweet(
                         {t.length > 150 && (
                           <button
                             onClick={() => setShowMore(!showMore)}
-                            className="font-bold cursor-pointer hover:underline"
+                            className="text-blue-100 cursor-pointer hover:underline"
                           >
                             {showMore ? "show less" : "show more..."}
                           </button>
@@ -352,7 +352,7 @@ export default forwardRef(function Tweet(
                 {tweetData.text.length > 150 && (
                   <button
                     onClick={() => setShowMore(!showMore)}
-                    className="font-bold cursor-pointer hover:underline"
+                    className="text-blue-100 cursor-pointer hover:underline"
                   >
                     {showMore ? "show less" : "show more..."}
                   </button>
