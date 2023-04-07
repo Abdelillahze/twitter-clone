@@ -47,7 +47,7 @@ export default function Sidebar({ user }) {
   }, []);
 
   return (
-    <div className="transition-all -translate-x-full sm:translate-x-0 sidebar z-20 bg-black-100 absolute left-0 sm:relative w-8/12 sm:w-2/12 xl:w-3/12  sm:block">
+    <div className="min-h-[100vh] h-full transition-all -translate-x-full sm:translate-x-0 sidebar z-20 bg-black-100 absolute left-0 sm:relative w-8/12 sm:w-2/12 xl:w-3/12  sm:block">
       <div className="w-full sticky top-0 min-h-[100vh] py-4 px-6 border border-transparent border-r-borderColor">
         <div className="mt-4 sm:mt-0 container flex flex-col justify-start items-start sm:items-center xl:items-start">
           <Link

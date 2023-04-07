@@ -15,7 +15,6 @@ export default function Profile({ user }) {
   const router = useRouter();
   const username = router.query.username;
   const limit = 10;
-  console.log(username);
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.data.length) {
       return null;

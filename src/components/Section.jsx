@@ -50,7 +50,7 @@ export default function Section({
   }
 
   return (
-    <div ref={section}>
+    <div className="w-full" ref={section}>
       <SectionHead user={user} type={type} changePostsType={changePostsType} />
       <TweetMaker user={user} />
       {!loading && tweets?.length === 0 && (
