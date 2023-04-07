@@ -40,7 +40,7 @@ export default function Profile({ user }) {
     router.push("/404");
   }
   return (
-    <div className="relative w-full sm:w-10/12 lg:w-7/12 xl:w-6/12 min-h-[100vh] h-full border border-transparent border-r-borderColor">
+    <div className="relative bg-black-100 xs:w-full sm:w-10/12 lg:w-7/12 xl:w-6/12 min-h-[100vh] h-full border border-transparent border-r-borderColor">
       {data ? (
         <>
           <ProfileHead fetchedUser={data[0].fetchedUser} />

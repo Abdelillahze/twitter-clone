@@ -16,7 +16,7 @@ export default function TweetList({ user, tweet }) {
     refreshInterval: 1000,
   });
   return (
-    <div className="relative w-full sm:w-10/12 lg:w-7/12 xl:w-6/12 min-h-[100vh] h-full border border-transparent border-r-borderColor">
+    <div className="relative bg-black-100 h-full xs:w-full sm:w-10/12 lg:w-7/12 xl:w-6/12 min-h-[100vh] border border-transparent border-r-borderColor">
       {data ? (
         <TweetDetails user={user} tweet={data.tweet} refresh={mutate} />
       ) : (
