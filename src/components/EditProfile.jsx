@@ -25,8 +25,8 @@ export default function EditProfile({ changeShowEditProfile, refresh }) {
     setData({
       name: data.user.name,
       bio: data.user.bio,
-      selectedImageFile: null,
-      selectedBannerFile: null,
+      selectedImageFile: data.user.image,
+      selectedBannerFile: data.user.banner,
       image: data.user.image,
       banner: data.user.banner,
     });

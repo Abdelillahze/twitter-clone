@@ -64,7 +64,7 @@ export default function Sidebar({ user }) {
           </Link>
           <Link
             href="/home"
-            className="flex items-center hover:bg-white-10 px-3 py-1 xl:px-4 pr-6 sm:pr-3 xl:pr-6 rounded-full"
+            className="flex text-start items-center hover:bg-white-10 px-3 py-1 xl:px-4 pr-6 sm:pr-3 xl:pr-6 rounded-full"
           >
             <BiHomeCircle className="w-8 h-8 my-2 mr-4 sm:mr-0 xl:mr-4" />
             <span className="block sm:hidden xl:block">Home</span>

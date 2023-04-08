@@ -26,7 +26,7 @@ export default function Profile({ user }) {
     getKey,
     fetcher,
     {
-      // refreshInterval: 1000,
+      refreshInterval: 1000,
       revalidateAll: true,
     }
   );
