@@ -42,12 +42,6 @@ const commentSchema = new Schema({
   },
 });
 
-commentSchema.pre("remove", async function (next) {
-  await Like.findOneAndDelete({ tweet: this._id });
-  await Retweet.findOneAndDelete({ tweet: this._id });
-  await this.model().findOneAndDelete({ tweet: this._id });
-  next();
-});
-const commentModel = models.Comment || model("Comment", commentSchema);
+const Comment = models.Comment || model("Comment", commentSchema);
 
-export default commentModel;
+export default Comment;

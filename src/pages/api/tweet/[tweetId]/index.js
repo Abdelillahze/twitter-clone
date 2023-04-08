@@ -29,6 +29,11 @@ export default async function handler(req, res) {
             _id: tweetId,
             author: user._id,
           });
+          const commentTweet = await Tweet.findById(tweet.tweet._id);
+          commentTweet.comments = commentTweet.comments.filter(
+            (comment) => comment.toString() !== tweet._id.toString()
+          );
+          commentTweet.save();
           if (!tweet) {
             return res.status(404).json({ error: "la" });
           }
@@ -102,7 +107,7 @@ export default async function handler(req, res) {
           }
         }
 
-        res.status(200).json({ tweet });
+        return res.status(200).json({ tweet });
       }
     }
   } catch (err) {

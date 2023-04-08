@@ -124,7 +124,6 @@ export default forwardRef(function Tweet(
 
     await fetch();
   };
-
   const editHandler = async (input, imageFile, videoFile) => {
     console.log(input, imageFile, videoFile);
     setUpload(true);

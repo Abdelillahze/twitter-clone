@@ -16,6 +16,6 @@ const likesSchema = new Schema({
   },
 });
 
-const likesModel = models.Like || model("Like", likesSchema);
+const Like = models.Like || model("Like", likesSchema);
 
-export default likesModel;
+export default Like;

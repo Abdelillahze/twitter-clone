@@ -388,6 +388,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
         </div>
       </div>
       <CommentMaker user={user} tweetId={tweet._id} />
+      {console.log(tweet)}
       {tweet.comments.map((comment) => (
         <Tweet
           user={user}

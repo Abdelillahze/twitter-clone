@@ -33,6 +33,6 @@ const retweetSchema = new Schema({
   ],
 });
 
-const retweetModel = models.Retweet || model("Retweet", retweetSchema);
+const Retweet = models.Retweet || model("Retweet", retweetSchema);
 
-export default retweetModel;
+export default Retweet;

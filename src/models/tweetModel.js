@@ -44,6 +44,6 @@ const tweetSchema = new Schema({
   ],
 });
 
-const tweetModel = models.Tweet || model("Tweet", tweetSchema);
+const Tweet = models.Tweet || model("Tweet", tweetSchema);
 
-export default tweetModel;
+export default Tweet;
