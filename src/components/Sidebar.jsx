@@ -47,7 +47,7 @@ export default function Sidebar({ user }) {
   }, []);
 
   return (
-    <div className="min-h-[100vh] h-full transition-all -translate-x-full sm:translate-x-0 sidebar z-20 bg-black-100 absolute top-0 left-0 sm:relative md:sticky w-8/12 sm:w-2/12 xl:w-3/12  sm:block">
+    <div className="min-h-[100vh] text-white-100 h-full transition-all -translate-x-full sm:translate-x-0 sidebar z-20 bg-black-100 absolute top-0 left-0 sm:relative md:sticky w-8/12 sm:w-2/12 xl:w-3/12  sm:block">
       <div className="w-full sticky top-0 min-h-[100vh] py-4 px-6 border border-transparent border-r-borderColor">
         <div className="mt-4 sm:mt-0 container flex flex-col justify-start items-start sm:items-center xl:items-start">
           <Link
@@ -84,7 +84,7 @@ export default function Sidebar({ user }) {
             <span className="block sm:hidden xl:block">Notifications</span>
           </Link>
           <Link
-            href="#"
+            href="/messages"
             className="flex items-center hover:bg-white-10 px-3 py-1 xl:px-4 pr-6 sm:pr-3 xl:pr-6 rounded-full"
           >
             <BiMessageDetail className="w-8 h-8 my-2 mr-4 sm:mr-0 xl:mr-4" />

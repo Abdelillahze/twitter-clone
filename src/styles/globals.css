@@ -29,3 +29,16 @@ em-emoji-picker {
 video::-webkit-media-controls {
   display: none !important;
 }
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1d9bf0;
+  border-radius: 5px;
+}

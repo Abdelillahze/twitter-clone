@@ -5,10 +5,12 @@ import ImageView from "./ImageView";
 import { useState, useEffect, useRef } from "react";
 import { BsCalendar3 } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
+import { TbMessage2 } from "react-icons/tb";
 import axios from "axios";
 import Tweet from "./Tweet";
 import EditProfile from "./EditProfile";
 import Loading from "./Loading";
+import { useRouter } from "next/router";
 
 export default function ProfileSection({
   fetchedUser,
@@ -19,6 +21,7 @@ export default function ProfileSection({
   data,
   addSearch,
 }) {
+  const router = useRouter();
   const [parent, setParent] = useState(null);
   const [following, setFollowing] = useState(null);
   const [showImage, setShowImage] = useState(false);
@@ -68,6 +71,15 @@ export default function ProfileSection({
 
   const changeShowEditProfile = () => {
     setShowEditProfile(false);
+  };
+
+  const conversationHandler = async () => {
+    const res = await axios.post("/api/conversation", {
+      usersId: [fetchedUser._id],
+    });
+    const data = await res.data;
+
+    router.push("/messages");
   };
 
   const fetch = async () => {
@@ -137,7 +149,11 @@ export default function ProfileSection({
           </button>
         ) : (
           <div className="flex">
-            <FiMoreHorizontal className="flex items-center justify-center mr-4 h-10 w-10 px-2 text-white-100 border border-borderColor rounded-full transition-colors hover:bg-white-10 cursor-pointer" />
+            <FiMoreHorizontal className="flex items-center justify-center mr-2 h-10 w-10 px-2 text-white-100 border border-borderColor rounded-full transition-colors hover:bg-white-10 cursor-pointer" />
+            <TbMessage2
+              onClick={conversationHandler}
+              className="flex items-center justify-center mr-4 h-10 w-10 px-2 text-white-100 border border-borderColor rounded-full transition-colors hover:bg-white-10 cursor-pointer"
+            />
             <button
               onMouseEnter={(e) => {
                 if (following) {

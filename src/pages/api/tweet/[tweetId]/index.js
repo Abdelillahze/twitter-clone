@@ -43,6 +43,8 @@ export default async function handler(req, res) {
         await Retweet.deleteMany({ tweet: tweet._id });
         await Comment.deleteMany({ tweet: tweet._id });
 
+        user.tweets = user.tweets.filter((userTweet) => userTweet != tweet._id);
+
         tweet.deleteOne();
         return res.status(204).end();
       }

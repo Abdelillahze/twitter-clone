@@ -15,9 +15,11 @@ export default function App({
           <title>Twitter</title>
           <link rel="icon" href="/twitter-logo.webp" />
         </Head>
-        <SessionProvider session={session}>
-          {Component.getLayout(<Component {...pageProps} />)}
-        </SessionProvider>
+        <div className="flex min-h-[100vh] bg-black-100 text-white-100">
+          <SessionProvider session={session}>
+            {Component.getLayout(<Component {...pageProps} />)}
+          </SessionProvider>
+        </div>
       </>
     );
   }
