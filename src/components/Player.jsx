@@ -173,7 +173,6 @@ export default function Player({ src, className, alt }) {
       {hover && (
         <div
           onMouseMove={() => {
-            console.log("slm");
             setHover(true);
           }}
           className={controls}

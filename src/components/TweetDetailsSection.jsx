@@ -141,7 +141,6 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
       const data = await res.data;
       video = data.secure_url;
     }
-    console.log(image, video, input);
     const res = await axios.patch(`/api/tweet/${tweet._id}/edit`, {
       text: input,
       image,

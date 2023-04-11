@@ -217,7 +217,7 @@ export default forwardRef(function Tweet(
           <Link
             href={{
               pathname: `/[username]`,
-              query: { username: tweetData.author.username },
+              query: { username: tweet.author.username },
             }}
           >
             <span className="font-bold text-sm hover:underline">
@@ -290,7 +290,7 @@ export default forwardRef(function Tweet(
                         className="text-blue-100 bg-blue-10"
                         href={{
                           pathname: `/[username]`,
-                          query: { username: tweetData.author.username },
+                          query: { username },
                         }}
                       >
                         @{username}
