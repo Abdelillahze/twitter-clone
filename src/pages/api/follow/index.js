@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next";
 import User from "@/models/userModel";
 
 import { authOptions } from "../auth/[...nextauth]";
+import { createNotification } from "../notification";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -24,6 +25,7 @@ export default async function handler(req, res) {
               (acc) => acc.toString() != me._id.toString()
             );
           } else {
+            createNotification("follow", me, user);
             me.following.push(user);
             user.followers.push(me);
           }

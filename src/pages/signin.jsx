@@ -24,7 +24,7 @@ export default function SignIn() {
   }
 
   return (
-    <div className="bg-black-100 min-h-[100vh] grid place-items-center">
+    <div className="bg-black-100 w-full min-h-[100vh] grid place-items-center">
       <div className="h-full w-fit mx-auto flex flex-col items-center justify-center">
         <Image
           className="mb-6"
@@ -35,7 +35,7 @@ export default function SignIn() {
         />
 
         <button
-          onClick={signIn}
+          onClick={() => signIn("google")}
           className="text-white-100 flex items-center border border-white-100 px-4 py-2 rounded"
         >
           <Image

@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BiInfoCircle } from "react-icons/bi";
-import { BsImage, BsEmojiSmile } from "react-icons/bs";
+import { BsImage, BsEmojiSmile, BsArrowLeftShort } from "react-icons/bs";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdVerified } from "react-icons/md";
 import Image from "next/image";
 import Picker from "@emoji-mart/react";
 import axios from "axios";
 import Message from "./Message";
+import Link from "next/link";
 
 export default function ConversationMessages({ me, conversation, refresh }) {
+  const msgRef = useRef(null);
   const [Emojis, setEmojis] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const [receiver, setReceiver] = useState(
@@ -24,6 +26,10 @@ export default function ConversationMessages({ me, conversation, refresh }) {
     image: null,
     video: null,
   });
+
+  if (msgRef.current) {
+    msgRef.current.scroll(0, msgRef.current.scrollHeight);
+  }
 
   useEffect(() => {
     const fetchEmojis = async () => {
@@ -55,32 +61,37 @@ export default function ConversationMessages({ me, conversation, refresh }) {
       {/* head */}
       <div className="px-4 py-4 w-full flex justify-between items-center">
         <div className="flex items-center">
-          <Image
-            className="w-8 h-8 rounded-full mr-2"
-            src={conversationDetails.image}
-            alt="pfp"
-            width={"100"}
-            height={"100"}
-          />
-          <h1 className="flex items-center font-bold">
-            {conversationDetails.name}
-            {""}
-            {conversationDetails.verified && (
-              <MdVerified className="ml-1 w-4 h-4 text-blue-100" />
-            )}
-          </h1>
+          <Link href="/messages">
+            <BsArrowLeftShort className="lg:hidden w-8 h-8 mr-2 cursor-pointer" />
+          </Link>
+          <Link className="flex" href={`/${conversationDetails.name}`}>
+            <Image
+              className="w-8 h-8 rounded-full mr-2"
+              src={conversationDetails.image}
+              alt="pfp"
+              width={"100"}
+              height={"100"}
+            />
+            <h1 className="flex items-center font-bold">
+              {conversationDetails.name}
+              {""}
+              {conversationDetails.verified && (
+                <MdVerified className="ml-1 w-4 h-4 text-blue-100" />
+              )}
+            </h1>
+          </Link>
         </div>
         <BiInfoCircle className="cursor-pointer w-6 h-6" />
       </div>
       {/* messages */}
-      <div className="px-4 py-2 h-[80%] overflow-scroll">
+      <div ref={msgRef} className="px-4 py-2 h-[80%] overflow-scroll">
         {conversation.messages.map((message) => {
           return <Message message={message} isMe={message.author === me._id} />;
         })}
       </div>
 
       {/* sender */}
-      <div className="h-[12%] bg-black-100 absolute bottom-0 px-4 py-2 border border-transparent border-t-borderColor w-full">
+      <div className="h-[12%] flex items-center bg-black-100 absolute bottom-0 px-4 py-2 border border-transparent border-t-borderColor w-full">
         <div className="flex w-full items-center px-2 py-2 rounded-md bg-borderColor">
           <BsImage className="ml-2 mr-4 text-blue-100 cursor-pointer" />
           <BsEmojiSmile

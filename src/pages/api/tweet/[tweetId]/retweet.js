@@ -4,6 +4,7 @@ import User from "@/models/userModel";
 import Comment from "@/models/commentModel";
 import { getServerSession, signOut } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
+import { createNotification } from "../../notification";
 
 export default async function handler(req, res) {
   try {
@@ -47,7 +48,7 @@ export default async function handler(req, res) {
             tweet,
             model_type: type,
           });
-
+          createNotification("retweet", me, tweet.author, tweet);
           tweet.retweets.push(retweet);
           me.retweets.push(retweet);
           tweet.save();

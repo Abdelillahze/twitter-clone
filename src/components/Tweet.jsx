@@ -22,7 +22,25 @@ export default forwardRef(function Tweet(
   const [retweeted, setRetweeted] = useState(false);
   const [comment, setComment] = useState(false);
   const [tweetData, setTweetData] = useState(null);
-  const date = moment(tweet.createdAt).fromNow();
+  moment.updateLocale("en", {
+    relativeTime: {
+      future: "in %s",
+      past: "%s ago",
+      s: "Welcome to GeeksForGeeks, a few seconds",
+      ss: "%d seconds",
+      m: "a minute",
+      mm: "%d minutes",
+      h: "an hour",
+      hh: "%d hours",
+      d: "a day",
+      dd: "%d days",
+      M: "a month",
+      MM: "%d months",
+      y: "a year",
+      yy: "%d years",
+    },
+  });
+  const date = moment(tweet.createdAt).fromNow(true);
   const [deleteOption, setDeleteOption] = useState(null);
   const [editOption, setEditOption] = useState(null);
   const [followOption, setFollowOption] = useState(null);
@@ -125,7 +143,6 @@ export default forwardRef(function Tweet(
     await fetch();
   };
   const editHandler = async (input, imageFile, videoFile) => {
-    console.log(input, imageFile, videoFile);
     setUpload(true);
     let image = null;
     let video = null;
@@ -152,7 +169,6 @@ export default forwardRef(function Tweet(
       const data = await res.data;
       video = data.secure_url;
     }
-    console.log(image, video, input);
     const res = await axios.patch(`/api/tweet/${tweetData._id}/edit`, {
       text: input,
       image,
@@ -452,7 +468,7 @@ export default forwardRef(function Tweet(
           <button className="relative flex transition-colors group-hover:text-blue-100">
             <FiMoreHorizontal
               onClick={() => setSelector(!selector)}
-              className="w-8 h-8 mr-2 px-2 py-2 group-hover:bg-blue-10 rounded-full"
+              className="w-8 h-8 px-2 py-2 group-hover:bg-blue-10 rounded-full"
             />
             {
               <Selector

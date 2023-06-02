@@ -35,7 +35,7 @@ video::-webkit-media-controls {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: black;
 }
 
 ::-webkit-scrollbar-thumb {

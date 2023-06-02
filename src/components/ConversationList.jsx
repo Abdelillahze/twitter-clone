@@ -4,11 +4,16 @@ import Conversation from "./Conversation";
 import Loading from "./Loading";
 import { useRouter } from "next/router";
 
-export default function ConversationList({ user, conversations, loading }) {
+export default function ConversationList({
+  className,
+  user,
+  conversations,
+  loading,
+}) {
   const router = useRouter();
   return (
     <div
-      className={`w-full min-h-[100vh] h-full lg:w-2/5  py-4 border border-transparent border-r-borderColor`}
+      className={`overflow-scroll w-full ${className} lg:block min-h-[100vh] h-full lg:w-2/5 py-4 border border-transparent border-r-borderColor`}
     >
       <div className="px-2">
         {/* head */}

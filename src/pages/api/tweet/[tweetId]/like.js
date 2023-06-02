@@ -4,6 +4,7 @@ import Comment from "@/models/commentModel";
 import User from "@/models/userModel";
 import { getServerSession, signOut } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]";
+import { createNotification } from "../../notification";
 
 export default async function handler(req, res) {
   try {
@@ -42,6 +43,7 @@ export default async function handler(req, res) {
           return res.status(204).end();
         } else {
           const like = await Like.create({ author: me, tweet });
+          createNotification("like", me, tweet.author, tweet);
           tweet.likes.push(like);
           tweet.save();
           return res.status(204).end();

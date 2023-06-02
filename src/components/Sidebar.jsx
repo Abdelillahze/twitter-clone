@@ -14,8 +14,13 @@ import { FiFeather, FiMoreHorizontal } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import useSWR from "swr";
+import axios from "axios";
+
+const fetcher = (...args) => axios.get(...args).then((res) => res.data);
 
 export default function Sidebar({ user }) {
+  const { data, error, isLoading } = useSWR("/api/notification", fetcher);
   const router = useRouter();
   const [selector, setSelector] = useState(false);
   const selectorRef = useRef(null);
@@ -77,10 +82,25 @@ export default function Sidebar({ user }) {
             <span className="block sm:hidden xl:block">Search</span>
           </Link>
           <Link
-            href="#"
+            href="/notifications"
             className="flex items-center hover:bg-white-10 px-3 py-1 xl:px-4 pr-6 sm:pr-3 xl:pr-6 rounded-full"
           >
-            <IoNotifications className="w-8 h-8 my-2 mr-4 sm:mr-0 xl:mr-4" />
+            <div className="relative">
+              <IoNotifications className="w-8 h-8 my-2 mr-4 sm:mr-0 xl:mr-4" />
+              {data.notifications.filter(
+                (notification) => notification.readed === false
+              ).length > 0 && (
+                <span className="absolute bg-blue-100 w-4 h-4 text-center rounded-full text-xs top-0 right-2">
+                  {data.notifications.filter(
+                    (notification) => notification.readed === false
+                  ).length > 99
+                    ? "+99"
+                    : data.notifications.filter(
+                        (notification) => notification.readed === false
+                      ).length}
+                </span>
+              )}
+            </div>
             <span className="block sm:hidden xl:block">Notifications</span>
           </Link>
           <Link

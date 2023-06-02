@@ -26,8 +26,9 @@ export default function Page({ user }) {
   } = useSWR(`/api/conversation/${router.query.conversationId}`, fetcher);
 
   return (
-    <div className="flex overflow-hidden section max-h-screen bg-black-100 relative xs:w-full sm:w-10/12 lg:w-10/12 xl:w9/12 min-h-[100vh] border border-transparent border-r-borderColor">
+    <div className="flex overflow-hidden section max-h-screen bg-black-100 relative w-full sm:w-10/12 lg:w-10/12 xl:w9/12 min-h-[100vh] border border-transparent border-r-borderColor">
       <ConversationList
+        className="hidden lg:block"
         user={user}
         conversations={cons?.conversations}
         loading={isLoadingS}

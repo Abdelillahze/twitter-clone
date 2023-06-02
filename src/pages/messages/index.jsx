@@ -13,7 +13,7 @@ export default function Page({ user }) {
 
   console.log(data, isLoading, error);
   return (
-    <div className="section overflow-hidden max-h-screen bg-black-100 relative xs:w-full sm:w-10/12 lg:w-10/12 xl:w9/12 min-h-[100vh] border border-transparent border-r-borderColor">
+    <div className="section overflow-hidden max-h-screen bg-black-100 relative w-full sm:w-10/12 lg:w-10/12 xl:w9/12 min-h-[100vh] border border-transparent border-r-borderColor">
       <ConversationList
         user={user}
         conversations={data?.conversations}

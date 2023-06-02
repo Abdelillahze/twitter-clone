@@ -13,7 +13,7 @@ export default function Conversation({ user, lastMsg, conversation }) {
       onClick={() => {
         router.push(`/messages/${conversation._id}`);
       }}
-      className="transition-colors py-4 px-4 flex justify-between hover:bg-white-5 cursor-pointer"
+      className={`transition-all py-4 px-4 flex justify-between hover:bg-white-5 cursor-pointer`}
     >
       <div className="flex">
         <div className="rounded-full bg-borderColor w-14 h-14 mr-4">
