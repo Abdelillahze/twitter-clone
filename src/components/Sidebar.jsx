@@ -87,19 +87,20 @@ export default function Sidebar({ user }) {
           >
             <div className="relative">
               <IoNotifications className="w-8 h-8 my-2 mr-4 sm:mr-0 xl:mr-4" />
-              {data.notifications.filter(
-                (notification) => notification.readed === false
-              ).length > 0 && (
-                <span className="absolute bg-blue-100 w-4 h-4 text-center rounded-full text-xs top-0 right-2">
-                  {data.notifications.filter(
-                    (notification) => notification.readed === false
-                  ).length > 99
-                    ? "+99"
-                    : data.notifications.filter(
-                        (notification) => notification.readed === false
-                      ).length}
-                </span>
-              )}
+              {data &&
+                data.notifications.filter(
+                  (notification) => notification.readed === false
+                ).length > 0 && (
+                  <span className="absolute bg-blue-100 w-4 h-4 text-center rounded-full text-xs top-0 right-2">
+                    {data.notifications.filter(
+                      (notification) => notification.readed === false
+                    ).length > 99
+                      ? "+99"
+                      : data.notifications.filter(
+                          (notification) => notification.readed === false
+                        ).length}
+                  </span>
+                )}
             </div>
             <span className="block sm:hidden xl:block">Notifications</span>
           </Link>
