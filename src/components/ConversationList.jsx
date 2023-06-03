@@ -40,8 +40,8 @@ export default function ConversationList({
           return (
             <Conversation
               seen={
-                conversation.messages.at(-1)?.author === user._id &&
-                conversation.messages.at(-1)?.seen
+                conversation.messages.at(-1)?.author !== user._id &&
+                !conversation.messages.at(-1)?.seen
               }
               conversation={conversation}
               lastMsg={conversation.messages.at(-1)}

@@ -11,7 +11,6 @@ const fetcher = (...args) => axios.get(...args).then((res) => res.data);
 export default function Page({ user }) {
   const { data, error, isLoading } = useSWR("/api/conversation", fetcher);
 
-  console.log(data, isLoading, error);
   return (
     <div className="section overflow-hidden max-h-screen bg-black-100 relative w-full sm:w-10/12 lg:w-10/12 xl:w9/12 min-h-[100vh] border border-transparent border-r-borderColor">
       <ConversationList

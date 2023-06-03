@@ -14,7 +14,7 @@ export default function Conversation({ user, lastMsg, conversation, seen }) {
         router.push(`/messages/${conversation._id}`);
       }}
       className={`transition-all ${
-        seen ? "" : "bg-white-10"
+        seen ? "bg-white-10" : ""
       } py-4 px-4 flex justify-between hover:bg-white-5 cursor-pointer`}
     >
       <div className="flex">
@@ -46,11 +46,11 @@ export default function Conversation({ user, lastMsg, conversation, seen }) {
             </span>
           </div>
           {lastMsg && lastMsg.length > 25 ? (
-            <p className={`text-p ${seen ? "" : "text-white-100 font-bold"}`}>
+            <p className={`text-p ${seen ? "text-white-100 font-bold" : ""}`}>
               {lastMsg?.slice(0, 25)}...
             </p>
           ) : (
-            <p className={`text-p ${seen ? "" : "text-white-100 font-bold"}`}>
+            <p className={`text-p ${seen ? "text-white-100 font-bold" : ""}`}>
               {lastMsg?.text || "no messages"}
             </p>
           )}
