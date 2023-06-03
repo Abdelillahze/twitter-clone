@@ -28,6 +28,10 @@ const messageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Conversation",
   },
+  seen: {
+    type: Boolean,
+    default: () => false,
+  },
 });
 
 const Message = models.Message || model("Message", messageSchema);

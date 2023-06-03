@@ -12,6 +12,7 @@ export default function Maker({
   upload,
   className,
   info,
+  Emojis,
 }) {
   const inputFileRef = useRef(null);
   const [data, setData] = useState({
@@ -22,7 +23,6 @@ export default function Maker({
     selectedVideo: info && info.video ? info.video : null,
     showEmojis: false,
   });
-  const [Emojis, setEmojis] = useState(null);
   const tagRegex = /<@(?<username>[^<@>]+)>/gm;
 
   useEffect(() => {
@@ -37,19 +37,6 @@ export default function Maker({
       });
     }
   }, [upload]);
-
-  useEffect(() => {
-    const fetchEmojis = async () => {
-      const response = await fetch(
-        "https://cdn.jsdelivr.net/npm/@emoji-mart/data"
-      );
-      const data = await response.json();
-
-      setEmojis(data);
-    };
-
-    fetchEmojis();
-  }, []);
 
   if (upload) {
     return (

@@ -26,7 +26,7 @@ export default forwardRef(function Tweet(
     relativeTime: {
       future: "in %s",
       past: "%s ago",
-      s: "s",
+      s: "now",
       ss: "%ds",
       m: "a minute",
       mm: "%dm",

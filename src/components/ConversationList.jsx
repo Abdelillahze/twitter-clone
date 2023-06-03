@@ -39,8 +39,12 @@ export default function ConversationList({
         conversations.map((conversation) => {
           return (
             <Conversation
+              seen={
+                conversation.messages.at(-1)?.author === user._id &&
+                conversation.messages.at(-1)?.seen
+              }
               conversation={conversation}
-              lastMsg={conversation.messages.at(-1)?.text}
+              lastMsg={conversation.messages.at(-1)}
               user={
                 conversation.members.length > 2
                   ? conversation

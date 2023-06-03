@@ -8,7 +8,7 @@ import { useState } from "react";
 
 const fetcher = (...args) => axios.get(...args).then((res) => res.data);
 
-export default function Home({ user }) {
+export default function Home({ user, Emojis }) {
   const [type, setType] = useState("foryou");
   const limit = 10;
 
@@ -41,6 +41,7 @@ export default function Home({ user }) {
           data={data}
           refresh={mutate}
           size={size}
+          Emojis={Emojis}
           type={type}
           changePostsType={changePostsType}
           addSearch={addSearch}
@@ -53,6 +54,9 @@ export default function Home({ user }) {
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const session = await getServerSession(req, res, authOptions);
+
+  const response = await fetch("https://cdn.jsdelivr.net/npm/@emoji-mart/data");
+  const data = await response.json();
 
   if (!session) {
     return {
@@ -78,6 +82,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       user: JSON.parse(JSON.stringify(user)),
+      Emojis: data,
     },
   };
 }

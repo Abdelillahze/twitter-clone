@@ -13,6 +13,7 @@ export default function Section({
   loading,
   changePostsType,
   addSearch,
+  Emojis,
 }) {
   const section = useRef(null);
   const observer = useRef(null);
@@ -52,7 +53,7 @@ export default function Section({
   return (
     <div className="w-full" ref={section}>
       <SectionHead user={user} type={type} changePostsType={changePostsType} />
-      <TweetMaker user={user} />
+      <TweetMaker Emojis={Emojis} user={user} />
       {!loading && tweets?.length === 0 && (
         <h1 className="text-center mt-4">No Tweets :(</h1>
       )}

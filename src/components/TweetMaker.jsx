@@ -2,7 +2,7 @@ import Maker from "./Maker";
 import axios from "axios";
 import { useState } from "react";
 
-export default function TweetMaker({ user }) {
+export default function TweetMaker({ user, Emojis }) {
   const [upload, setUpload] = useState(false);
   const TweetHandler = async (input, imageFile, videoFile) => {
     setUpload(true);
@@ -44,6 +44,7 @@ export default function TweetMaker({ user }) {
   };
   return (
     <Maker
+      Emojis={Emojis}
       user={user}
       handler={TweetHandler}
       upload={upload}

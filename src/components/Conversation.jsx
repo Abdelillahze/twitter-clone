@@ -4,7 +4,7 @@ import { MdVerified } from "react-icons/md";
 import moment from "moment";
 import { useRouter } from "next/dist/client/router";
 
-export default function Conversation({ user, lastMsg, conversation }) {
+export default function Conversation({ user, lastMsg, conversation, seen }) {
   const router = useRouter();
   const date = moment(conversation.createdAt).fromNow();
 
@@ -13,7 +13,9 @@ export default function Conversation({ user, lastMsg, conversation }) {
       onClick={() => {
         router.push(`/messages/${conversation._id}`);
       }}
-      className={`transition-all py-4 px-4 flex justify-between hover:bg-white-5 cursor-pointer`}
+      className={`transition-all ${
+        seen ? "" : "bg-white-10"
+      } py-4 px-4 flex justify-between hover:bg-white-5 cursor-pointer`}
     >
       <div className="flex">
         <div className="rounded-full bg-borderColor w-14 h-14 mr-4">
@@ -44,9 +46,13 @@ export default function Conversation({ user, lastMsg, conversation }) {
             </span>
           </div>
           {lastMsg && lastMsg.length > 25 ? (
-            <p className="text-p">{lastMsg.slice(0, 25)}...</p>
+            <p className={`text-p ${seen ? "" : "text-white-100 font-bold"}`}>
+              {lastMsg?.slice(0, 25)}...
+            </p>
           ) : (
-            <p className="text-p">{lastMsg || "no messages"}</p>
+            <p className={`text-p ${seen ? "" : "text-white-100 font-bold"}`}>
+              {lastMsg?.text || "no messages"}
+            </p>
           )}
         </div>
       </div>

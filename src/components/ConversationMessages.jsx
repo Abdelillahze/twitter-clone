@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { BiInfoCircle } from "react-icons/bi";
 import { BsImage, BsEmojiSmile, BsArrowLeftShort } from "react-icons/bs";
 import { AiOutlineSend } from "react-icons/ai";
@@ -10,6 +10,7 @@ import Message from "./Message";
 import Link from "next/link";
 
 export default function ConversationMessages({ me, conversation, refresh }) {
+  let id = null;
   const msgRef = useRef(null);
   const [Emojis, setEmojis] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
@@ -25,6 +26,20 @@ export default function ConversationMessages({ me, conversation, refresh }) {
     input: "",
     image: null,
     video: null,
+  });
+
+  const observer = useRef(null);
+
+  const lastTweetRef = useCallback((node) => {
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        if (receiver._id === me._id) return;
+        axios.patch(`/api/message/${id}`);
+      }
+    });
+    if (node) observer.current.observe(node);
   });
 
   if (msgRef.current) {
@@ -85,8 +100,22 @@ export default function ConversationMessages({ me, conversation, refresh }) {
       </div>
       {/* messages */}
       <div ref={msgRef} className="px-4 py-2 h-[80%] overflow-scroll">
-        {conversation.messages.map((message) => {
-          return <Message message={message} isMe={message.author === me._id} />;
+        {conversation.messages.map((message, i) => {
+          id = message._id;
+          return (
+            <>
+              <Message
+                ref={message.seen ? null : lastTweetRef}
+                message={message}
+                isMe={message.author === me._id}
+              />
+              {i + 1 === conversation.messages.length &&
+                message.seen &&
+                message.author === me._id && (
+                  <p className="w-fit text-p ml-auto">Seen</p>
+                )}
+            </>
+          );
         })}
       </div>
 

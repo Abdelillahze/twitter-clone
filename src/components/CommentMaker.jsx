@@ -2,7 +2,7 @@ import Maker from "./Maker";
 import axios from "axios";
 import { useState } from "react";
 
-export default function CommentMaker({ user, tweetId, className }) {
+export default function CommentMaker({ user, tweetId, className, Emojis }) {
   const [upload, setUpload] = useState(false);
   const CommentHandler = async (input, imageFile, videoFile) => {
     setUpload(true);
@@ -43,6 +43,7 @@ export default function CommentMaker({ user, tweetId, className }) {
   };
   return (
     <Maker
+      Emojis={Emojis}
       className={className}
       handler={CommentHandler}
       upload={upload}

@@ -14,7 +14,7 @@ import { useState, useRef, useEffect } from "react";
 import Player from "./Player";
 import Maker from "./Maker";
 
-export default function TweetDetailsSection({ user, tweet, refresh }) {
+export default function TweetDetailsSection({ user, tweet, refresh, Emojis }) {
   const router = useRouter();
   const date = moment(tweet.createdAt);
   const [selector, setSelector] = useState(false);
@@ -181,6 +181,7 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
   if (edit) {
     return (
       <Maker
+        Emojis={Emojis}
         user={user}
         info={tweet}
         handler={editHandler}
@@ -385,9 +386,10 @@ export default function TweetDetailsSection({ user, tweet, refresh }) {
           </button>
         </div>
       </div>
-      <CommentMaker user={user} tweetId={tweet._id} />
+      <CommentMaker Emojis={Emojis} user={user} tweetId={tweet._id} />
       {tweet.comments.map((comment) => (
         <Tweet
+          Emojis={Emojis}
           user={user}
           tweet={comment}
           refresh={refresh}
